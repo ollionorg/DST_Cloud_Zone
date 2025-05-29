@@ -1,6 +1,6 @@
 /* Base styles */
 body { 
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    font-family: 'Inter', sans-serif;
     background-color: #f9fafb;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -19,13 +19,13 @@ body {
 
 /* Content sections */
 .content-section { 
-    display: none;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-.content-section.active { 
     display: block;
     opacity: 1;
+    transition: opacity 0.3s ease;
+}
+.content-section:not(.active) { 
+    display: none;
+    opacity: 0;
 }
 
 /* Cards */
@@ -101,4 +101,60 @@ p, li {
     .accordion-content {
         max-height: none;
     }
+}
+
+.gemini-result { 
+    margin-top: 1rem; 
+    padding: 0.75rem; 
+    background-color: #f0f9ff; 
+    border-left: 4px solid #3b82f6; 
+    border-radius: 0.25rem; 
+    font-size: 0.9rem; 
+    white-space: pre-wrap; 
+}
+
+.loading-spinner {
+    border: 4px solid #f3f3f3; /* Light grey */
+    border-top: 4px solid #3b82f6; /* Blue */
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    animation: spin 1s linear infinite;
+    margin-right: 8px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.modal {
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%;
+    background-color: rgba(0,0,0,0.5); 
+    display: flex;
+    align-items: center; 
+    justify-content: center; 
+    z-index: 1000;
+}
+
+.modal-content { 
+    background-color: white; 
+    padding: 20px; 
+    border-radius: 8px; 
+    text-align: center; 
+    box-shadow: 0 0 10px rgba(0,0,0,0.25); 
+}
+
+.modal-close-btn { 
+    margin-top: 15px; 
+    padding: 8px 16px; 
+    background-color: #3b82f6; 
+    color: white; 
+    border: none; 
+    border-radius: 4px; 
+    cursor: pointer; 
 } 

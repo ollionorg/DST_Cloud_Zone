@@ -5,6 +5,19 @@ document.addEventListener('DOMContentLoaded', function () {
     const mobileMenuButton = document.getElementById('mobileMenuButton');
     const mainNav = document.getElementById('mainNav');
 
+    const messageModal = document.getElementById('messageModal');
+    const modalMessageText = document.getElementById('modalMessageText');
+    const modalCloseButton = document.getElementById('modalCloseButton');
+
+    function showModal(message) {
+        modalMessageText.textContent = message;
+        messageModal.style.display = 'flex';
+    }
+
+    modalCloseButton.addEventListener('click', () => {
+        messageModal.style.display = 'none';
+    });
+
     // Mobile menu toggle
     mobileMenuButton?.addEventListener('click', () => {
         mainNav.classList.toggle('hidden');
@@ -23,14 +36,18 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
         
+        // First, hide all sections
         sections.forEach(section => {
-            if (section.id === currentSectionId) {
-                section.classList.add('active');
-            } else {
-                section.classList.remove('active');
-            }
+            section.classList.remove('active');
         });
 
+        // Then, show the current section
+        const currentSection = document.getElementById(currentSectionId);
+        if (currentSection) {
+            currentSection.classList.add('active');
+        }
+
+        // Update navigation links
         navLinks.forEach(link => {
             if (link.getAttribute('href') === '#' + currentSectionId) {
                 link.classList.add('active');
@@ -75,7 +92,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 parentGroup.querySelectorAll('.accordion-content').forEach(item => {
                     if (item !== content && item.style.maxHeight) {
                         item.style.maxHeight = null;
-                        item.previousElementSibling.querySelector('.text-xl').classList.remove('rotate-180');
+                        const itemIcon = item.previousElementSibling.querySelector('.text-xl');
+                        if (itemIcon) itemIcon.classList.remove('rotate-180');
                         item.previousElementSibling.classList.remove('ui-open');
                     }
                 });
@@ -83,11 +101,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (content.style.maxHeight) {
                 content.style.maxHeight = null;
-                icon.classList.remove('rotate-180');
+                if (icon) icon.classList.remove('rotate-180');
                 this.classList.remove('ui-open');
             } else {
                 content.style.maxHeight = content.scrollHeight + "px";
-                icon.classList.add('rotate-180');
+                if (icon) icon.classList.add('rotate-180');
                 this.classList.add('ui-open');
             }
         });
@@ -99,6 +117,82 @@ document.addEventListener('DOMContentLoaded', function () {
     // Set up event listeners
     window.addEventListener('hashchange', updateActiveSection);
     updateActiveSection(); // Initial call
+
+    const geminiButtons = document.querySelectorAll('.gemini-trigger-btn');
+    geminiButtons.forEach(button => {
+        button.addEventListener('click', async function() {
+            const accordionContent = this.closest('.accordion-content');
+            const considerationTitleElement = accordionContent.parentElement.querySelector('.consideration-title');
+            const considerationTextElement = accordionContent.querySelector('.consideration-text');
+            const resultContainer = accordionContent.querySelector('.gemini-result-container');
+
+            if (!considerationTitleElement || !considerationTextElement || !resultContainer) {
+                showModal('Error: Could not find necessary elements for Gemini API call.');
+                return;
+            }
+            
+            const considerationTitle = considerationTitleElement.textContent.trim();
+            const considerationDescription = considerationTextElement.textContent.trim();
+
+            resultContainer.style.display = 'block';
+            resultContainer.innerHTML = '<div class="flex items-center"><div class="loading-spinner"></div><span>Analyzing... Please wait.</span></div>';
+            
+            // Ensure the accordion expands if it was closed by another opening
+            if (!accordionContent.style.maxHeight || accordionContent.style.maxHeight === "0px") {
+                accordionContent.style.maxHeight = accordionContent.scrollHeight + "px";
+                 const icon = accordionContent.previousElementSibling.querySelector('.text-xl');
+                 if(icon) icon.classList.add('rotate-180');
+                 accordionContent.previousElementSibling.classList.add('ui-open');
+            }
+
+            const prompt = `For a major multi-cloud transformation project (transitioning from on-premise UNN to white-labeled AWS, Azure, GCP), analyze the following key consideration:
+            Title: "${considerationTitle}"
+            Description: "${considerationDescription}"
+            
+            Please provide:
+            1. Potential risks associated with this consideration.
+            2. Suggested mitigation strategies for each risk.
+            Format the response clearly, perhaps using bullet points for risks and sub-bullets for mitigations.`;
+
+            try {
+                let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+                const payload = { contents: chatHistory };
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${window.GEMINI_API_KEY}`;
+                
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error('Gemini API Error:', errorData);
+                    throw new Error(`API request failed with status ${response.status}: ${errorData.error?.message || 'Unknown error'}`);
+                }
+
+                const result = await response.json();
+
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const text = result.candidates[0].content.parts[0].text;
+                    resultContainer.innerHTML = `<div class="gemini-result">${text.replace(/\n/g, '<br>')}</div>`;
+                } else {
+                    resultContainer.innerHTML = `<div class="gemini-result text-red-600">No content received from Gemini. Response: ${JSON.stringify(result)}</div>`;
+                    console.error('Unexpected Gemini API response structure:', result);
+                }
+            } catch (error) {
+                console.error('Error calling Gemini API:', error);
+                resultContainer.innerHTML = `<div class="gemini-result text-red-600">Error: Could not fetch insights. ${error.message}</div>`;
+            } finally {
+                // Re-adjust max-height in case content made it taller
+                 if (accordionContent.style.maxHeight && accordionContent.style.maxHeight !== "0px") {
+                    accordionContent.style.maxHeight = accordionContent.scrollHeight + "px";
+                }
+            }
+        });
+    });
 });
 
 // Roadmap chart initialization
