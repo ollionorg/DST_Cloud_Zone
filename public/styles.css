@@ -1,0 +1,104 @@
+/* Base styles */
+body { 
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background-color: #f9fafb;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Navigation */
+.nav-link { 
+    transition: all 0.3s ease;
+    will-change: color, border-color;
+}
+.nav-link.active { 
+    color: #3b82f6; 
+    border-bottom-color: #3b82f6; 
+    font-weight: 600;
+}
+
+/* Content sections */
+.content-section { 
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+.content-section.active { 
+    display: block;
+    opacity: 1;
+}
+
+/* Cards */
+.card { 
+    background-color: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px -1px rgba(0,0,0,0.1), 0 4px 6px -1px rgba(0,0,0,0.06);
+}
+
+/* Accordion */
+.accordion-content { 
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease-out;
+    will-change: max-height;
+}
+
+/* Chart container */
+.chart-container { 
+    position: relative;
+    width: 100%;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+    height: 450px;
+    max-height: 600px;
+}
+
+/* Typography */
+h1, h2, h3 { 
+    color: #1f2937;
+    line-height: 1.2;
+}
+p, li { 
+    color: #4b5563;
+    line-height: 1.6;
+}
+
+/* Accent colors */
+.accent-color { 
+    color: #2563eb;
+}
+.bg-accent-light { 
+    background-color: #eff6ff;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) { 
+    .chart-container { 
+        height: 350px;
+        max-height: 400px;
+    }
+    .card {
+        margin: 0.5rem;
+    }
+}
+
+/* Print styles */
+@media print {
+    .content-section {
+        display: block;
+        opacity: 1;
+    }
+    .card {
+        box-shadow: none;
+        border: 1px solid #e5e7eb;
+    }
+    .accordion-content {
+        max-height: none;
+    }
+} 
