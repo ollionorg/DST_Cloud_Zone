@@ -157,9 +157,7 @@ document.addEventListener('DOMContentLoaded', function () {
             try {
                 let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
                 const payload = { contents: chatHistory };
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${window.GEMINI_API_KEY}`;
-                
-                const response = await fetch(apiUrl, {
+                const response = await fetch('/api/generateInsights', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)

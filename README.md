@@ -73,11 +73,11 @@ dst_cloudzone/
 ### Gemini API Integration
 
 To enable the AI-powered risk analysis:
-1. Obtain a Gemini API key
-2. Add the API key to the `script.js` file:
-   ```javascript
-   const apiKey = "your-api-key-here";
-   ```
+1. Obtain a Gemini API key.
+2. Set the GEMINI_API_KEY environment variable in your Vercel project settings.
+3. The application uses a secure Vercel serverless function (`/api/generateInsights`) to proxy requests to the Gemini API, so your API key is never exposed to the browser.
+
+No need to hardcode or inject the API key into your frontend code.
 
 ### Customization
 
