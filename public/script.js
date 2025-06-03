@@ -2,8 +2,7 @@
 document.addEventListener('DOMContentLoaded', function () {
     const navLinks = document.querySelectorAll('.nav-link');
     const sections = document.querySelectorAll('.content-section');
-    // const mobileMenuButton = document.getElementById('mobileMenuButton'); // Removed
-    const mainNav = document.getElementById('mainNav'); // Still used
+    const mainNav = document.getElementById('mainNav');
 
     const messageModal = document.getElementById('messageModal');
     const modalMessageText = document.getElementById('modalMessageText');
@@ -14,9 +13,12 @@ document.addEventListener('DOMContentLoaded', function () {
         messageModal.style.display = 'flex';
     }
 
-    modalCloseButton.addEventListener('click', () => {
-        messageModal.style.display = 'none';
-    });
+    if (modalCloseButton) { // Ensure button exists before adding listener
+        modalCloseButton.addEventListener('click', () => {
+            messageModal.style.display = 'none';
+        });
+    }
+
 
     // Update active section based on URL hash
     function updateActiveSection() {
@@ -65,115 +67,22 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
     
-    // Accordion functionality
-    const accordionToggles = document.querySelectorAll('.accordion-toggle');
-    accordionToggles.forEach(toggle => {
-        toggle.addEventListener('click', function () {
-            const content = this.nextElementSibling;
-            const icon = this.querySelector('.text-xl');
-            
-            const parentGroup = this.closest('.space-y-4');
-            if (parentGroup) {
-                parentGroup.querySelectorAll('.accordion-content').forEach(item => {
-                    if (item !== content && item.style.maxHeight) {
-                        item.style.maxHeight = null;
-                        const itemIcon = item.previousElementSibling.querySelector('.text-xl');
-                        if (itemIcon) itemIcon.classList.remove('rotate-180');
-                        item.previousElementSibling.classList.remove('ui-open');
-                    }
-                });
-            }
+    // Accordion functionality (If you have accordions, keep this part)
+    // const accordionToggles = document.querySelectorAll('.accordion-toggle');
+    // accordionToggles.forEach(toggle => { ... });
 
-            if (content.style.maxHeight) {
-                content.style.maxHeight = null;
-                if (icon) icon.classList.remove('rotate-180');
-                this.classList.remove('ui-open');
-            } else {
-                content.style.maxHeight = content.scrollHeight + "px";
-                if (icon) icon.classList.add('rotate-180');
-                this.classList.add('ui-open');
-            }
-        });
-    });
+    // Initialize roadmap chart if it exists
+    if (document.getElementById('roadmapChart')) {
+        initializeRoadmapChart(); 
+    }
 
-    // Initialize roadmap chart
-    initializeRoadmapChart(); 
-
-    // Set up event listeners
+    // Set up event listeners for active section
     window.addEventListener('hashchange', updateActiveSection);
     updateActiveSection(); // Initial call
 
-    const geminiButtons = document.querySelectorAll('.gemini-trigger-btn');
-    geminiButtons.forEach(button => {
-        button.addEventListener('click', async function() {
-            const accordionContent = this.closest('.accordion-content');
-            const considerationTitleElement = accordionContent.parentElement.querySelector('.consideration-title');
-            const considerationTextElement = accordionContent.querySelector('.consideration-text');
-            const resultContainer = accordionContent.querySelector('.gemini-result-container');
-
-            if (!considerationTitleElement || !considerationTextElement || !resultContainer) {
-                showModal('Error: Could not find necessary elements for Gemini API call.');
-                return;
-            }
-            
-            const considerationTitle = considerationTitleElement.textContent.trim();
-            const considerationDescription = considerationTextElement.textContent.trim();
-
-            resultContainer.style.display = 'block';
-            resultContainer.innerHTML = '<div class="flex items-center"><div class="loading-spinner"></div><span>Analyzing... Please wait.</span></div>';
-            
-            if (!accordionContent.style.maxHeight || accordionContent.style.maxHeight === "0px") {
-                accordionContent.style.maxHeight = accordionContent.scrollHeight + "px";
-                 const icon = accordionContent.previousElementSibling.querySelector('.text-xl');
-                 if(icon) icon.classList.add('rotate-180');
-                 accordionContent.previousElementSibling.classList.add('ui-open');
-            }
-
-            const prompt = `For a major multi-cloud transformation project (transitioning from on-premise UNN to white-labeled AWS, Azure, GCP), analyze the following key consideration:
-            Title: "${considerationTitle}"
-            Description: "${considerationDescription}"
-            
-            Please provide:
-            1. Potential risks associated with this consideration.
-            2. Suggested mitigation strategies for each risk.
-            Format the response clearly, perhaps using bullet points for risks and sub-bullets for mitigations.`;
-
-            try {
-                let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
-                const payload = { contents: chatHistory };
-                const response = await fetch('/api/generateInsights', { 
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    console.error('Gemini API Error:', errorData);
-                    throw new Error(`API request failed with status ${response.status}: ${errorData.error?.message || 'Unknown error'}`);
-                }
-
-                const result = await response.json();
-
-                if (result.candidates && result.candidates.length > 0 &&
-                    result.candidates[0].content && result.candidates[0].content.parts &&
-                    result.candidates[0].content.parts.length > 0) {
-                    const text = result.candidates[0].content.parts[0].text;
-                    resultContainer.innerHTML = `<div class="gemini-result">${text.replace(/\n/g, '<br>')}</div>`;
-                } else {
-                    resultContainer.innerHTML = `<div class="gemini-result text-red-600">No content received from Gemini. Response: ${JSON.stringify(result)}</div>`;
-                    console.error('Unexpected Gemini API response structure:', result);
-                }
-            } catch (error) {
-                console.error('Error calling Gemini API:', error);
-                resultContainer.innerHTML = `<div class="gemini-result text-red-600">Error: Could not fetch insights. ${error.message}</div>`;
-            } finally {
-                 if (accordionContent.style.maxHeight && accordionContent.style.maxHeight !== "0px") {
-                    accordionContent.style.maxHeight = accordionContent.scrollHeight + "px";
-                }
-            }
-        });
-    });
+    // Gemini buttons (If you have these, keep this part)
+    // const geminiButtons = document.querySelectorAll('.gemini-trigger-btn');
+    // geminiButtons.forEach(button => { ... });
 
     // Use Cases Carousel
     const carousel = document.getElementById('useCasesCarousel');
@@ -190,155 +99,189 @@ document.addEventListener('DOMContentLoaded', function () {
         if (totalSlides === 0) {
             console.warn("No slides found for use cases carousel. Aborting carousel setup.");
             if (carousel) carousel.style.display = 'none'; 
-            return;
-        }
+            // return; // Do not return from the main DOMContentLoaded if other scripts need to run
+        } else { // Only run carousel logic if there are slides
 
-        carousel.setAttribute('tabindex', '0');
+            carousel.setAttribute('tabindex', '0');
 
-        if (indicatorsContainer) {
-            indicatorsContainer.innerHTML = ''; 
-            slides.forEach((_, idx) => {
-                const dot = document.createElement('button');
-                dot.classList.add(
-                    'carousel-indicator', 'px-3', 'py-1', 'text-sm', 'font-medium',
-                    'rounded-full', 'hover:bg-gray-600', 'focus:outline-none', 'transition-colors'
-                );
-                dot.setAttribute('data-slide-to', idx);
-                dot.setAttribute('aria-label', `View use case ${idx + 1}`);
-                dot.textContent = idx + 1;
-                if (idx === currentIndex) { 
-                    dot.classList.add('bg-gray-800', 'text-white');
-                    dot.classList.remove('bg-gray-400', 'text-black');
-                } else {
-                    dot.classList.add('bg-gray-400', 'text-black');
-                    dot.classList.remove('bg-gray-800', 'text-white');
-                }
-                dot.addEventListener('click', e => showSlide(+e.currentTarget.dataset.slideTo));
-                indicatorsContainer.appendChild(dot);
-            });
-        }
-        const indicators = indicatorsContainer ? Array.from(indicatorsContainer.children) : [];
-
-        function updateCarousel() {
-            if (slidesContainer) {
-                slidesContainer.style.transform = `translateX(-${currentIndex * 100}%)`;
-            }
-            if (indicators.length > 0) {
-                indicators.forEach((dot, i) => {
-                    if (i === currentIndex) {
+            if (indicatorsContainer) {
+                indicatorsContainer.innerHTML = ''; 
+                slides.forEach((_, idx) => {
+                    const dot = document.createElement('button');
+                    dot.classList.add(
+                        'carousel-indicator', 'px-3', 'py-1', 'text-sm', 'font-medium',
+                        'rounded-full', 'hover:bg-gray-600', 'focus:outline-none', 'transition-colors'
+                    );
+                    dot.setAttribute('data-slide-to', idx);
+                    dot.setAttribute('aria-label', `View use case ${idx + 1}`);
+                    dot.textContent = idx + 1;
+                    if (idx === currentIndex) { 
                         dot.classList.add('bg-gray-800', 'text-white');
                         dot.classList.remove('bg-gray-400', 'text-black');
                     } else {
                         dot.classList.add('bg-gray-400', 'text-black');
                         dot.classList.remove('bg-gray-800', 'text-white');
                     }
+                    dot.addEventListener('click', e => showSlide(+e.currentTarget.dataset.slideTo));
+                    indicatorsContainer.appendChild(dot);
                 });
             }
-        }
+            const indicators = indicatorsContainer ? Array.from(indicatorsContainer.children) : [];
 
-        function showSlide(i) {
-            currentIndex = (i + totalSlides) % totalSlides;
-            updateCarousel();
-        }
-
-        if (nextButton) nextButton.addEventListener('click', () => showSlide(currentIndex + 1));
-        if (prevButton) prevButton.addEventListener('click', () => showSlide(currentIndex - 1));
-
-        let autoplayIntervalId = null;
-        function startAutoplay() {
-            stopAutoplay(); 
-            if (totalSlides > 1) { 
-                autoplayIntervalId = setInterval(() => showSlide(currentIndex + 1), 5000);
-            }
-        }
-        function stopAutoplay() {
-            clearInterval(autoplayIntervalId);
-        }
-
-        carousel.addEventListener('mouseenter', stopAutoplay);
-        carousel.addEventListener('mouseleave', startAutoplay);
-
-        carousel.addEventListener('keydown', e => {
-            if (e.key === 'ArrowRight') showSlide(currentIndex + 1);
-            if (e.key === 'ArrowLeft') showSlide(currentIndex - 1);
-        });
-
-        let startX = 0;
-        carousel.addEventListener('touchstart', e => {
-            if (e.changedTouches && e.changedTouches.length > 0) {
-              startX = e.changedTouches[0].screenX;
-            }
-        }, { passive: true });
-        carousel.addEventListener('touchend', e => {
-            if (e.changedTouches && e.changedTouches.length > 0) {
-              const endX = e.changedTouches[0].screenX;
-              if (endX - startX > 50) showSlide(currentIndex - 1); 
-              if (startX - endX > 50) showSlide(currentIndex + 1); 
-            }
-        });
-
-        function setFixedCarouselHeight() {
-            const carouselElement = document.getElementById('useCasesCarousel');
-            if (!carouselElement) return; 
-
-            const currentSlidesForHeight = Array.from(carouselElement.querySelectorAll('.carousel-slide'));
-            let maxHeight = 0;
-
-            if (currentSlidesForHeight.length === 0) {
-                carouselElement.style.height = 'auto';
-                return;
+            function updateCarousel() {
+                if (slidesContainer) {
+                    slidesContainer.style.transform = `translateX(-${currentIndex * 100}%)`;
+                }
+                if (indicators.length > 0) {
+                    indicators.forEach((dot, i) => {
+                        if (i === currentIndex) {
+                            dot.classList.add('bg-gray-800', 'text-white');
+                            dot.classList.remove('bg-gray-400', 'text-black');
+                        } else {
+                            dot.classList.add('bg-gray-400', 'text-black');
+                            dot.classList.remove('bg-gray-800', 'text-white');
+                        }
+                    });
+                }
             }
 
-            currentSlidesForHeight.forEach(slide => {
-                const originalDisplay = slide.style.display;
-                const originalPosition = slide.style.position;
-                const originalVisibility = slide.style.visibility;
+            function showSlide(i) {
+                currentIndex = (i + totalSlides) % totalSlides;
+                updateCarousel();
+            }
 
-                slide.style.position = 'absolute'; 
-                slide.style.visibility = 'hidden'; 
-                slide.style.display = 'block';     
+            if (nextButton) nextButton.addEventListener('click', () => showSlide(currentIndex + 1));
+            if (prevButton) prevButton.addEventListener('click', () => showSlide(currentIndex - 1));
 
-                const height = slide.scrollHeight;
-                if (height > maxHeight) {
-                    maxHeight = height;
+            let autoplayIntervalId = null;
+            function startAutoplay() {
+                stopAutoplay(); 
+                if (totalSlides > 1) { 
+                    autoplayIntervalId = setInterval(() => showSlide(currentIndex + 1), 7000); // Slightly longer interval
+                }
+            }
+            function stopAutoplay() {
+                clearInterval(autoplayIntervalId);
+            }
+
+            carousel.addEventListener('mouseenter', stopAutoplay);
+            carousel.addEventListener('mouseleave', startAutoplay);
+            carousel.addEventListener('focusin', stopAutoplay); // Stop for keyboard navigation
+            carousel.addEventListener('focusout', startAutoplay); // Resume after focus leaves
+
+            carousel.addEventListener('keydown', e => {
+                if (e.key === 'ArrowRight') showSlide(currentIndex + 1);
+                if (e.key === 'ArrowLeft') showSlide(currentIndex - 1);
+            });
+
+            let startX = 0;
+            carousel.addEventListener('touchstart', e => {
+                if (e.changedTouches && e.changedTouches.length > 0) {
+                  startX = e.changedTouches[0].screenX;
+                }
+            }, { passive: true });
+            carousel.addEventListener('touchend', e => {
+                if (e.changedTouches && e.changedTouches.length > 0) {
+                  const endX = e.changedTouches[0].screenX;
+                  if (endX - startX > 50) showSlide(currentIndex - 1); 
+                  if (startX - endX > 50) showSlide(currentIndex + 1); 
+                }
+            });
+
+            function setFixedCarouselHeight() {
+                const carouselElement = document.getElementById('useCasesCarousel');
+                if (!carouselElement) return; 
+
+                const currentSlidesForHeight = Array.from(carouselElement.querySelectorAll('.carousel-slide'));
+                let maxHeight = 0;
+
+                if (currentSlidesForHeight.length === 0) {
+                    carouselElement.style.height = 'auto';
+                    return;
                 }
 
-                slide.style.display = originalDisplay;
-                slide.style.position = originalPosition;
-                slide.style.visibility = originalVisibility;
-            });
-            
-            const isMobile = window.innerWidth < 768;
-            // Adjusted PADDING_AND_CONTROLS_HEIGHT - Increased values
-            const PADDING_AND_CONTROLS_HEIGHT = isMobile ? (window.innerWidth < 480 ? 90 : 110) : 150; 
-            const MIN_CAROUSEL_HEIGHT = isMobile ? (window.innerWidth < 480 ? 320 : 350) : 450;
+                currentSlidesForHeight.forEach(slide => {
+                    const originalDisplay = slide.style.display;
+                    const originalPosition = slide.style.position;
+                    const originalVisibility = slide.style.visibility;
+
+                    slide.style.position = 'absolute'; 
+                    slide.style.visibility = 'hidden'; 
+                    slide.style.display = 'block';     
+
+                    const height = slide.scrollHeight;
+                    if (height > maxHeight) {
+                        maxHeight = height;
+                    }
+
+                    slide.style.display = originalDisplay;
+                    slide.style.position = originalPosition;
+                    slide.style.visibility = originalVisibility;
+                });
+                
+                const isMobile = window.innerWidth < 768;
+                const PADDING_AND_CONTROLS_HEIGHT = isMobile ? (window.innerWidth < 480 ? 90 : 110) : 150; // Kept increased values
+                const MIN_CAROUSEL_HEIGHT = isMobile ? (window.innerWidth < 480 ? 320 : 350) : 450;
 
 
-            const finalHeight = Math.max(maxHeight + PADDING_AND_CONTROLS_HEIGHT, MIN_CAROUSEL_HEIGHT);
-            carouselElement.style.height = finalHeight + 'px';
-        }
-
-        window.addEventListener('load', function() {
-            if (totalSlides > 0) { 
-                setFixedCarouselHeight(); 
-                updateCarousel();       
-                startAutoplay();        
+                const finalHeight = Math.max(maxHeight + PADDING_AND_CONTROLS_HEIGHT, MIN_CAROUSEL_HEIGHT);
+                carouselElement.style.height = finalHeight + 'px';
             }
+
+            function initializeCarouselOnLoad() {
+                if (totalSlides > 0) {
+                    setFixedCarouselHeight();
+                    updateCarousel();
+                    startAutoplay();
+                }
+            }
+
+            // **MODIFIED PART STARTS HERE**
+            // Wait for both the window to load and fonts to be ready
+            if (typeof document.fonts === "undefined") {
+                // Fallback for browsers that don't support document.fonts (very old)
+                if (document.readyState === 'complete') {
+                    initializeCarouselOnLoad();
+                } else {
+                    window.addEventListener('load', initializeCarouselOnLoad, { once: true });
+                }
+            } else {
+                 Promise.all([
+                    new Promise(resolve => {
+                        if (document.readyState === 'complete') {
+                            resolve();
+                        } else {
+                            window.addEventListener('load', resolve, { once: true });
+                        }
+                    }),
+                    document.fonts.ready
+                ]).then(() => {
+                    // console.log("Window loaded and fonts ready, initializing carousel."); // For debugging
+                    initializeCarouselOnLoad();
+                }).catch(error => {
+                    console.error("Error waiting for fonts or load, initializing carousel with fallback:", error);
+                    // Fallback: Initialize on load anyway if fonts.ready fails
+                     if (document.readyState === 'complete') {
+                        initializeCarouselOnLoad();
+                    } else {
+                        window.addEventListener('load', initializeCarouselOnLoad, { once: true });
+                    }
+                });
+            }
+            // **MODIFIED PART ENDS HERE**
+
             window.addEventListener('resize', setFixedCarouselHeight);
-        });
 
-        if (totalSlides <= 1) {
-            if (prevButton) prevButton.style.display = 'none';
-            if (nextButton) nextButton.style.display = 'none';
-            if (indicatorsContainer) indicatorsContainer.style.display = 'none';
-            stopAutoplay();
-            const indicatorsWrapper = document.getElementById('carouselIndicatorsWrapper');
-            if(indicatorsWrapper && indicatorsContainer && indicatorsContainer.children.length === 0) {
-                 // indicatorsWrapper.querySelector('span.text-lg.font-bold').style.display = 'none';
+            if (totalSlides <= 1) {
+                if (prevButton) prevButton.style.display = 'none';
+                if (nextButton) nextButton.style.display = 'none';
+                if (indicatorsContainer) indicatorsContainer.style.display = 'none';
+                stopAutoplay();
             }
-        }
-    }
+        } // End of "else" for totalSlides > 0
+    } // End of "if (carousel)"
 
+    // Key considerations tabs
     const tabItems = document.querySelectorAll('#keyConsiderationsMenu .tab-item');
     const tabContents = document.querySelectorAll('#keyConsiderationsContent .tab-content');
     
@@ -351,21 +294,21 @@ document.addEventListener('DOMContentLoaded', function () {
               content.classList.add('hidden');
           }
       });
-    }
     
-    tabItems.forEach(item => {
-      item.addEventListener('click', function(){
-        tabItems.forEach(i => i.classList.remove('bg-gray-200'));
-        tabContents.forEach(content => content.classList.add('hidden'));
-        item.classList.add('bg-gray-200');
-        const targetId = item.getAttribute('data-tab');
-        const targetContent = document.getElementById(targetId);
-        if(targetContent) {
-          targetContent.classList.remove('hidden');
-        }
+      tabItems.forEach(item => {
+        item.addEventListener('click', function(){
+          tabItems.forEach(i => i.classList.remove('bg-gray-200'));
+          tabContents.forEach(content => content.classList.add('hidden'));
+          item.classList.add('bg-gray-200');
+          const targetId = item.getAttribute('data-tab');
+          const targetContent = document.getElementById(targetId);
+          if(targetContent) {
+            targetContent.classList.remove('hidden');
+          }
+        });
       });
-    });
-});
+    }
+}); // End of DOMContentLoaded
 
 // Roadmap chart initialization
 function initializeRoadmapChart() {
