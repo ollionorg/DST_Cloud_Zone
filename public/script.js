@@ -336,15 +336,14 @@ function initializeRoadmapChart() {
         return;
     }
 
+    // Ensure all helper functions (hexToRgba, getPhaseColorKey) and
+    // data definitions (phaseColors, allPhasesData, etc.) are present
+    // from your previous working version.
     const infoPopup = document.getElementById('roadmapInfoPopup');
     const popupPhaseName = document.getElementById('popupPhaseName')?.querySelector('span');
     const popupDuration = document.getElementById('popupDuration')?.querySelector('span');
     const popupTimeframe = document.getElementById('popupTimeframe')?.querySelector('span');
     const popupActivitiesList = document.getElementById('popupActivities');
-
-    // Helper functions (hexToRgba, getPhaseColorKey) and data (phaseColors, allPhasesData, newPhaseLabels, chartSegmentsData)
-    // should be the same as in your working version that produced the image with "PX" labels.
-    // Ensure these are correctly defined above this point in your actual script.
 
     function hexToRgba(hex, alpha = 1) {
         if (typeof hex !== 'string' || !hex.startsWith('#')) {
@@ -410,7 +409,7 @@ function initializeRoadmapChart() {
             });
         }
     });
-    // MODIFICATION START: Define annotations for phase start markers
+
     const phaseStartMarkers = allPhasesData.map((phase, index) => ({
         type: 'line',
         scaleID: 'x',
@@ -420,22 +419,20 @@ function initializeRoadmapChart() {
         borderDash: [5, 5],
         label: {
             display: true,
-            content: `Phase ${index + 1}`, // CHANGED: Full phase text
+            content: `Phase ${index + 1}`,
             position: 'start',
             font: {
-                size: 10, // Adjusted for potentially wider text, can be fine-tuned
-                weight: 'normal', // CHANGED: For a cleaner look (can be 'bold' if preferred)
-                // family: 'Arial, sans-serif' // Optional: Specify a professional font family
+                size: 9,
+                weight: 'normal',
             },
-            color: '#4A4A4A', // CHANGED: Dark grey text for professionalism
-            backgroundColor: 'rgba(255, 255, 255, 0)', // CHANGED: Transparent background
-                                                     // Alternative for subtle background: 'rgba(240, 240, 240, 0.75)' (light grey, semi-transparent)
-            padding: { x: 3, y: 2 }, // Minimal padding, adjust if using a background
-            yAdjust: -10,  // Keep similar yAdjust, fine-tune if needed for new text height
-            xAdjust: (phase.x[0] === 0) ? 25 : 0, // CHANGED: Increased xAdjust for "Phase 1" to avoid overlap with y-axis
+            color: '#4A4A4A',
+            backgroundColor: 'rgba(255, 255, 255, 0)',
+            padding: { x: 2, y: 1 },
+            yAdjust: -10,
+            // MODIFIED xAdjust: Reduced the rightward shift for "Phase 1"
+            xAdjust: (phase.x[0] === 0) ? 0 : 3, // "Phase 1" shifted by 8px; others by 3px.
         }
     }));
-    // MODIFICATION END
 
     const roadmapConfig = {
         type: 'bar',
@@ -467,7 +464,7 @@ function initializeRoadmapChart() {
             maintainAspectRatio: false,
             layout: {
                 padding: {
-                    top: 40 // Keep sufficient top padding for labels
+                    top: 40
                 }
             },
             scales: {
@@ -516,13 +513,12 @@ function initializeRoadmapChart() {
                     enabled: false
                 },
                 annotation: {
-                    clip: false, // KEEP THIS: It helped labels appear
+                    clip: false,
                     drawTime: 'afterDatasetsDraw',
                     annotations: phaseStartMarkers
                 }
             },
             onHover: (event, chartElements, chart) => {
-                // ... (Your existing onHover logic for the info popup) ...
                 if (!infoPopup) return;
                 const canvas = chart.canvas;
                 if (chartElements.length > 0) {
@@ -569,7 +565,6 @@ function initializeRoadmapChart() {
 
     if (roadmapChartCtx.canvas) {
         roadmapChartCtx.canvas.addEventListener('mouseout', (event) => {
-            // ... (Your existing mouseout logic for the info popup) ...
             if (!infoPopup) return;
             const canvasRect = roadmapChartCtx.canvas.getBoundingClientRect();
             if (event.clientX < canvasRect.left || event.clientX > canvasRect.right ||
