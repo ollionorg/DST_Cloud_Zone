@@ -112,7 +112,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Initialize roadmap chart
-    initializeRoadmapChart();
+    initializeRoadmapChart(); 
 
     // Set up event listeners
     window.addEventListener('hashchange', updateActiveSection);
@@ -137,7 +137,6 @@ document.addEventListener('DOMContentLoaded', function () {
             resultContainer.style.display = 'block';
             resultContainer.innerHTML = '<div class="flex items-center"><div class="loading-spinner"></div><span>Analyzing... Please wait.</span></div>';
             
-            // Ensure the accordion expands if it was closed by another opening
             if (!accordionContent.style.maxHeight || accordionContent.style.maxHeight === "0px") {
                 accordionContent.style.maxHeight = accordionContent.scrollHeight + "px";
                  const icon = accordionContent.previousElementSibling.querySelector('.text-xl');
@@ -157,7 +156,7 @@ document.addEventListener('DOMContentLoaded', function () {
             try {
                 let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
                 const payload = { contents: chatHistory };
-                const response = await fetch('/api/generateInsights', {
+                const response = await fetch('/api/generateInsights', { 
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
@@ -184,7 +183,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.error('Error calling Gemini API:', error);
                 resultContainer.innerHTML = `<div class="gemini-result text-red-600">Error: Could not fetch insights. ${error.message}</div>`;
             } finally {
-                // Re-adjust max-height in case content made it taller
                  if (accordionContent.style.maxHeight && accordionContent.style.maxHeight !== "0px") {
                     accordionContent.style.maxHeight = accordionContent.scrollHeight + "px";
                 }
@@ -199,15 +197,13 @@ document.addEventListener('DOMContentLoaded', function () {
         const prevButton = document.getElementById('carouselPrevBtn');
         const nextButton = document.getElementById('carouselNextBtn');
         const indicatorsContainer = document.getElementById('carouselIndicators');
-        const slidesContainer = carousel.querySelector('.carousel-slides'); // Get the slides container
+        const slidesContainer = carousel.querySelector('.carousel-slides'); 
 
         let currentIndex = 0;
         const totalSlides = slides.length;
 
-        // ARIA labels already set in HTML; ensure focusable container
         carousel.setAttribute('tabindex', '0');
 
-        // remove any existing dots
         indicatorsContainer.innerHTML = '';
         slides.forEach((_, idx) => {
           const dot = document.createElement('button');
@@ -228,15 +224,10 @@ document.addEventListener('DOMContentLoaded', function () {
         });
         const indicators = Array.from(indicatorsContainer.children);
 
-        // Function to update slides visibility and indicator styles.
         function updateCarousel() {
-          // SLIDING LOGIC:
-          // Move the .carousel-slides container by a percentage
           if (slidesContainer) {
             slidesContainer.style.transform = `translateX(-${currentIndex * 100}%)`;
           }
-
-          // Update indicator styles (this part remains the same)
           indicators.forEach((dot, i) => {
             if (i === currentIndex) {
               dot.classList.add('bg-gray-800', 'text-white');
@@ -259,20 +250,17 @@ document.addEventListener('DOMContentLoaded', function () {
           dot.addEventListener('click', e => showSlide(+e.currentTarget.dataset.slideTo))
         );
 
-        // Autoplay with pause on hover
         let autoplay = setInterval(() => showSlide(currentIndex + 1), 5000);
         carousel.addEventListener('mouseenter', () => clearInterval(autoplay));
         carousel.addEventListener('mouseleave', () =>
           autoplay = setInterval(() => showSlide(currentIndex + 1), 5000)
         );
 
-        // Keyboard navigation
         carousel.addEventListener('keydown', e => {
           if (e.key === 'ArrowRight') showSlide(currentIndex + 1);
           if (e.key === 'ArrowLeft') showSlide(currentIndex - 1);
         });
 
-        // Touch/swipe support
         let startX = 0;
         carousel.addEventListener('touchstart', e => startX = e.changedTouches[0].screenX);
         carousel.addEventListener('touchend', e => {
@@ -280,55 +268,34 @@ document.addEventListener('DOMContentLoaded', function () {
           if (endX - startX > 50) showSlide(currentIndex - 1);
           if (startX - endX > 50) showSlide(currentIndex + 1);
         });
-
-        // Compute and set fixed carousel height based on the tallest slide
+        
         function setFixedCarouselHeight() {
-          // Wait until images and other resources are loaded
-          const slides = document.querySelectorAll('#useCasesCarousel .carousel-slide');
+          const currentSlides = document.querySelectorAll('#useCasesCarousel .carousel-slide');
           let maxHeight = 0;
           
-          // First, make sure one slide is active so we have accurate content
-          slides.forEach((slide, i) => {
-            if (i === 0) slide.classList.add('active');
-            else slide.classList.remove('active');
-          });
-          
-          // Force a repaint to ensure dimensions are calculated
-          document.body.offsetHeight;
-          
-          // Now measure each slide
-          slides.forEach(slide => {
-            // Clone the slide to measure it without affecting the display
-            const clone = slide.cloneNode(true);
-            clone.style.position = 'absolute';
-            clone.style.visibility = 'hidden';
-            clone.style.display = 'block';
-            clone.style.opacity = '1';
-            document.body.appendChild(clone);
-            
-            const height = clone.scrollHeight;
+          currentSlides.forEach((slide, i) => {
+            const originalDisplay = slide.style.display;
+            slide.style.display = 'block'; 
+            slide.style.position = 'absolute'; 
+            slide.style.visibility = 'hidden';
+
+            const height = slide.scrollHeight;
             if (height > maxHeight) {
               maxHeight = height;
             }
-            
-            document.body.removeChild(clone);
+            slide.style.display = originalDisplay;
+            slide.style.position = '';
+            slide.style.visibility = '';
           });
           
-        // Add buffer to ensure no content is cut off and to make it look bigger
-          const finalHeight = Math.max(maxHeight + 160, 550); // Increased buffer and min height
+          const finalHeight = Math.max(maxHeight + 160, 550); 
           document.querySelector('#useCasesCarousel').style.height = finalHeight + 'px';
           console.log('Set carousel height to', finalHeight);
         }
 
-        // Set up carousel after page is fully loaded
         window.addEventListener('load', function() {
-          // First initialize active slide
           updateCarousel();
-          
-          // Then calculate height based on content
           setFixedCarouselHeight();
-          
-          // Recalculate on window resize
           window.addEventListener('resize', setFixedCarouselHeight);
         });
     }
@@ -336,18 +303,21 @@ document.addEventListener('DOMContentLoaded', function () {
     const tabItems = document.querySelectorAll('#keyConsiderationsMenu .tab-item');
     const tabContents = document.querySelectorAll('#keyConsiderationsContent .tab-content');
     
-    // Optional: Activate the first tab by default
-    if(tabItems.length) {
-      tabItems[0].classList.add('bg-gray-200');
+    if(tabItems.length && tabContents.length) { 
+      tabItems[0].classList.add('bg-gray-200'); 
+      tabContents.forEach((content, index) => { 
+          if (index === 0) {
+              content.classList.remove('hidden');
+          } else {
+              content.classList.add('hidden');
+          }
+      });
     }
     
     tabItems.forEach(item => {
       item.addEventListener('click', function(){
-        // Remove active styling from all tabs
         tabItems.forEach(i => i.classList.remove('bg-gray-200'));
-        // Hide all tab content
         tabContents.forEach(content => content.classList.add('hidden'));
-        // Activate the clicked tab
         item.classList.add('bg-gray-200');
         const targetId = item.getAttribute('data-tab');
         const targetContent = document.getElementById(targetId);
@@ -360,76 +330,146 @@ document.addEventListener('DOMContentLoaded', function () {
 
 // Roadmap chart initialization
 function initializeRoadmapChart() {
-    const roadmapChartCtx = document.getElementById('roadmapChart');
-    if (!roadmapChartCtx) return;
+    const roadmapChartCtx = document.getElementById('roadmapChart')?.getContext('2d');
+    if (!roadmapChartCtx) {
+        console.warn("Roadmap chart canvas context not found.");
+        return;
+    }
 
-    // Helper function to convert HEX to RGBA
+    const infoPopup = document.getElementById('roadmapInfoPopup');
+    const popupPhaseName = document.getElementById('popupPhaseName')?.querySelector('span');
+    const popupDuration = document.getElementById('popupDuration')?.querySelector('span');
+    const popupTimeframe = document.getElementById('popupTimeframe')?.querySelector('span');
+    const popupActivitiesList = document.getElementById('popupActivities');
+
+    // Helper functions (hexToRgba, getPhaseColorKey) and data (phaseColors, allPhasesData, newPhaseLabels, chartSegmentsData)
+    // should be the same as in your working version that produced the image with "PX" labels.
+    // Ensure these are correctly defined above this point in your actual script.
+
     function hexToRgba(hex, alpha = 1) {
+        if (typeof hex !== 'string' || !hex.startsWith('#')) {
+            return `rgba(0,0,0,${alpha})`;
+        }
         const r = parseInt(hex.slice(1, 3), 16);
         const g = parseInt(hex.slice(3, 5), 16);
         const b = parseInt(hex.slice(5, 7), 16);
+        if (isNaN(r) || isNaN(g) || isNaN(b)) {
+            return `rgba(0,0,0,${alpha})`;
+        }
         return `rgba(${r}, ${g}, ${b}, ${alpha})`;
     }
 
-    const newPhaseLabels = [
-        'Mobilize',
-        'Infrastructure as a service',
-        'Migration',
-        'Data Storage',
-        'Disaster recovery as a service',
-        'Optimization'
+    const phaseColors = {
+        mobilize: '#3B4430',
+        iaas: '#D93434',
+        migration: '#CC7722',
+        dataStorage: '#008080',
+        draas: '#243A73',
+        optimization: '#2F3A4C',
+        default: '#808080'
+    };
+
+    function getPhaseColorKey(phaseNameString) {
+        if (!phaseNameString) return "default";
+        const name = phaseNameString.toLowerCase();
+        if (name.startsWith("mobilize")) return "mobilize";
+        if (name.startsWith("infrastructure as a service")) return "iaas";
+        if (name.startsWith("migration")) return "migration";
+        if (name.startsWith("data storage")) return "dataStorage";
+        if (name.startsWith("disaster recovery as a service")) return "draas";
+        if (name.startsWith("optimization")) return "optimization";
+        console.warn("No color key found for phase:", phaseNameString, "using default.");
+        return "default";
+    }
+
+    const allPhasesData = [
+        { name: 'Mobilize', x: [0, 2], activities: 'Project kick-off, UNN LZ Design & Build, Initial Assessments', hasRolloff: false },
+        { name: 'Infrastructure as a Service (IaaS)', x: [2, 5], activities: 'Foundational IaaS services, Pilot migration to UNN, First CSP PLZ Build, Pilot to CSP', hasRolloff: true },
+        { name: 'Migration', x: [5, 9], activities: 'App portfolio assessment, Wave migrations, Modernization efforts', hasRolloff: true },
+        { name: 'Data Storage', x: [9, 15], activities: 'Data landscape assessment, CSP Data Storage Implementation', hasRolloff: true },
+        { name: 'Disaster Recovery as a Service (DRaaS)', x: [15, 18], activities: 'BIA, RTO/RPO, DRaaS implementation & testing', hasRolloff: true },
+        { name: 'Optimization', x: [18, 24], activities: 'Continuous monitoring, cost/security/performance optimization', hasRolloff: false }
     ];
 
-    const phaseColors = {
-        mobilize: ' #3B4430',    // Ollion color
-        iaas: '#D93434',        // Red (from image description for IaaS)
-        migration: '#CC7722',   // Ochre (from image description for Migration)
-        dataStorage: '#008080', // Teal (from image description for Data Storage)
-        draas: '#243A73',       // Dark Blue (from image description for DRaaS)
-        optimization: '#2F3A4C' // Ollion color
-    };
+    const newPhaseLabels = allPhasesData.map(p => p.name);
 
-    const roadmapData = {
-        labels: newPhaseLabels,
-        datasets: [{
-            label: 'Estimated Duration (Illustrative Months)',
-            data: [
-                { x: [0, 2], y: 'Mobilize', activities: 'Project kick-off, UNN LZ Design & Build, Initial Assessments' },
-                { x: [2, 24], y: 'Infrastructure As a Service', activities: 'Foundational IaaS services, Pilot migration to UNN, First CSP PLZ Build, Pilot to CSP, Ongoing infrastructure support' }, // Extends until Optimization
-                { x: [5, 24], y: 'Migration', activities: 'App portfolio assessment, Wave migrations, Modernization efforts, Ongoing migration support' }, // Extends until Optimization
-                { x: [5, 24], y: 'Data Storage', activities: 'Data landscape assessment, CSP Data Storage Implementation, Ongoing data management' }, // Extends until Optimization
-                { x: [10, 24], y: 'Disaster Recovery As a Service', activities: 'BIA, RTO/RPO, DRaaS implementation & testing, Continuous DR readiness' }, // Ends when Optimization starts
-                { x: [15, 24], y: 'Optimization', activities: 'Continuous monitoring, cost/security/performance optimization' }
-            ],
-            backgroundColor: [
-                hexToRgba(phaseColors.mobilize, 0.7),
-                hexToRgba(phaseColors.iaas, 0.7),
-                hexToRgba(phaseColors.migration, 0.7),
-                hexToRgba(phaseColors.dataStorage, 0.7),
-                hexToRgba(phaseColors.draas, 0.7),
-                hexToRgba(phaseColors.optimization, 0.7)
-            ],
-            borderColor: [
-                phaseColors.mobilize,
-                phaseColors.iaas,
-                phaseColors.migration,
-                phaseColors.dataStorage,
-                phaseColors.draas,
-                phaseColors.optimization
-            ],
-            borderWidth: 1,
-            barPercentage: 0.6,
-            categoryPercentage: 0.8
-        }]
-    };
+    const chartSegmentsData = [];
+    allPhasesData.forEach(phase => {
+        chartSegmentsData.push({
+            x: phase.x,
+            y: phase.name,
+            activities: phase.activities,
+            isRolloff: false
+        });
+        if (phase.hasRolloff && phase.x[1] < 24) {
+            chartSegmentsData.push({
+                x: [phase.x[1], 24],
+                y: phase.name,
+                activities: 'Rolloff period: Ongoing support, transition, and service ramp-down activities.',
+                isRolloff: true
+            });
+        }
+    });
+    // MODIFICATION START: Define annotations for phase start markers
+    const phaseStartMarkers = allPhasesData.map((phase, index) => ({
+        type: 'line',
+        scaleID: 'x',
+        value: phase.x[0],
+        borderColor: 'rgba(0, 0, 0, 0.5)',
+        borderWidth: 1.5,
+        borderDash: [5, 5],
+        label: {
+            display: true,
+            content: `Phase ${index + 1}`, // CHANGED: Full phase text
+            position: 'start',
+            font: {
+                size: 10, // Adjusted for potentially wider text, can be fine-tuned
+                weight: 'normal', // CHANGED: For a cleaner look (can be 'bold' if preferred)
+                // family: 'Arial, sans-serif' // Optional: Specify a professional font family
+            },
+            color: '#4A4A4A', // CHANGED: Dark grey text for professionalism
+            backgroundColor: 'rgba(255, 255, 255, 0)', // CHANGED: Transparent background
+                                                     // Alternative for subtle background: 'rgba(240, 240, 240, 0.75)' (light grey, semi-transparent)
+            padding: { x: 3, y: 2 }, // Minimal padding, adjust if using a background
+            yAdjust: -10,  // Keep similar yAdjust, fine-tune if needed for new text height
+            xAdjust: (phase.x[0] === 0) ? 25 : 0, // CHANGED: Increased xAdjust for "Phase 1" to avoid overlap with y-axis
+        }
+    }));
+    // MODIFICATION END
 
     const roadmapConfig = {
         type: 'bar',
-        data: roadmapData,
+        data: {
+            labels: newPhaseLabels,
+            datasets: [
+                {
+                    label: 'Phases',
+                    data: chartSegmentsData,
+                    backgroundColor: function(context) {
+                        const dataPoint = context.raw;
+                        const colorKey = getPhaseColorKey(dataPoint.y);
+                        return dataPoint.isRolloff ? hexToRgba(phaseColors[colorKey], 0.25) : hexToRgba(phaseColors[colorKey], 0.75);
+                    },
+                    borderColor: function(context) {
+                        const dataPoint = context.raw;
+                        const colorKey = getPhaseColorKey(dataPoint.y);
+                        return dataPoint.isRolloff ? hexToRgba(phaseColors[colorKey], 0.4) : phaseColors[colorKey];
+                    },
+                    borderWidth: 1,
+                    barPercentage: 0.7,
+                    categoryPercentage: 0.8
+                }
+            ]
+        },
         options: {
             indexAxis: 'y',
             responsive: true,
             maintainAspectRatio: false,
+            layout: {
+                padding: {
+                    top: 40 // Keep sufficient top padding for labels
+                }
+            },
             scales: {
                 x: {
                     title: {
@@ -437,17 +477,31 @@ function initializeRoadmapChart() {
                         text: 'Timeline (Illustrative Months)'
                     },
                     min: 0,
-                    max: 24
+                    max: 24,
+                    ticks: {
+                        stepSize: 1
+                    },
+                    stacked: false
                 },
                 y: {
-                    // stacked: true, // Not needed for this Gantt-like display with distinct y-categories
+                    stacked: false,
                     ticks: {
                         autoSkip: false,
                         callback: function(value, index, values) {
-                            // 'this' refers to the scale object
-                            const label = this.getLabelForValue(value); 
-                            if (typeof label === 'string' && label.length > 30) {
-                                return label.match(/.{1,30}/g); // Split long labels
+                            const label = this.chart.data.labels[value];
+                            if (typeof label === 'string' && label.length > 25) {
+                                const parts = [];
+                                let currentLine = '';
+                                label.split(' ').forEach(word => {
+                                    if ((currentLine + word).length > 25) {
+                                        parts.push(currentLine.trim());
+                                        currentLine = word + ' ';
+                                    } else {
+                                        currentLine += word + ' ';
+                                    }
+                                });
+                                parts.push(currentLine.trim());
+                                return parts.filter(part => part.length > 0);
                             }
                             return label;
                         }
@@ -459,17 +513,71 @@ function initializeRoadmapChart() {
                     display: false
                 },
                 tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            const duration = context.raw.x[1] - context.raw.x[0];
-                            const activities = context.raw.activities;
-                            return `${phase}: ${duration} months. Key Activities: ${activities}`;
+                    enabled: false
+                },
+                annotation: {
+                    clip: false, // KEEP THIS: It helped labels appear
+                    drawTime: 'afterDatasetsDraw',
+                    annotations: phaseStartMarkers
+                }
+            },
+            onHover: (event, chartElements, chart) => {
+                // ... (Your existing onHover logic for the info popup) ...
+                if (!infoPopup) return;
+                const canvas = chart.canvas;
+                if (chartElements.length > 0) {
+                    canvas.style.cursor = 'pointer';
+                    if (chartElements[0].datasetIndex === 0 && chart.data.datasets[0].data[chartElements[0].index]) {
+                        const elementIndex = chartElements[0].index;
+                        const dataPoint = chart.data.datasets[0].data[elementIndex];
+                        if (popupPhaseName) popupPhaseName.textContent = dataPoint.y;
+                        const duration = dataPoint.x[1] - dataPoint.x[0];
+                        if (popupDuration) popupDuration.textContent = `${duration} month${duration === 1 ? '' : 's'}`;
+                        if (popupTimeframe) popupTimeframe.textContent = `(Months ${dataPoint.x[0]} - ${dataPoint.x[1]})`;
+                        if (popupActivitiesList) {
+                            popupActivitiesList.innerHTML = '';
+                            if (dataPoint.activities) {
+                                const activitiesArray = dataPoint.activities.split(', ');
+                                activitiesArray.forEach(activity => {
+                                    const li = document.createElement('li');
+                                    li.textContent = activity.trim();
+                                    popupActivitiesList.appendChild(li);
+                                });
+                            } else if (dataPoint.isRolloff) {
+                                 const li = document.createElement('li');
+                                 li.textContent = "General ongoing support and transition activities.";
+                                 popupActivitiesList.appendChild(li);
+                            }
                         }
+                        infoPopup.classList.add('visible');
+                    }
+                } else {
+                    canvas.style.cursor = 'default';
+                    if (infoPopup.classList.contains('visible')) {
+                         infoPopup.classList.remove('visible');
                     }
                 }
-            }
+            },
+            events: ['mousemove', 'mouseout', 'click', 'touchstart', 'touchmove'],
         }
     };
-    
-    new Chart(roadmapChartCtx, roadmapConfig);
+
+    if (window.myRoadmapChart instanceof Chart) {
+        window.myRoadmapChart.destroy();
+    }
+    window.myRoadmapChart = new Chart(roadmapChartCtx, roadmapConfig);
+
+    if (roadmapChartCtx.canvas) {
+        roadmapChartCtx.canvas.addEventListener('mouseout', (event) => {
+            // ... (Your existing mouseout logic for the info popup) ...
+            if (!infoPopup) return;
+            const canvasRect = roadmapChartCtx.canvas.getBoundingClientRect();
+            if (event.clientX < canvasRect.left || event.clientX > canvasRect.right ||
+                event.clientY < canvasRect.top || event.clientY > canvasRect.bottom) {
+                if (infoPopup.classList.contains('visible')) {
+                     infoPopup.classList.remove('visible');
+                }
+            }
+        });
+    }
 }
