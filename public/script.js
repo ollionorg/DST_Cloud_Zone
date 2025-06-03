@@ -309,8 +309,8 @@ document.addEventListener('DOMContentLoaded', function () {
             });
             
             const isMobile = window.innerWidth < 768;
-            // Adjusted PADDING_AND_CONTROLS_HEIGHT and MIN_CAROUSEL_HEIGHT
-            const PADDING_AND_CONTROLS_HEIGHT = isMobile ? (window.innerWidth < 480 ? 60 : 80) : 120; 
+            // Adjusted PADDING_AND_CONTROLS_HEIGHT - Increased values
+            const PADDING_AND_CONTROLS_HEIGHT = isMobile ? (window.innerWidth < 480 ? 90 : 110) : 150; 
             const MIN_CAROUSEL_HEIGHT = isMobile ? (window.innerWidth < 480 ? 320 : 350) : 450;
 
 
