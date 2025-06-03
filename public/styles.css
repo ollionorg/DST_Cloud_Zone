@@ -89,8 +89,8 @@ h1, h2, h3 {
   width: 100%;
   max-width: 900px;
   margin: 0 auto;
-  height: 450px;
-  max-height: 600px;
+  height: 450px; /* Default height */
+  max-height: 550px; /* Max height for larger screens */
 }
 
 /*==============================
@@ -99,20 +99,38 @@ h1, h2, h3 {
 p, li {
   color: #12130F;
   line-height: 1.6;
+  word-break: break-word; 
 }
 
 /*==============================
       Responsive Adjustments
 ==============================*/
-@media (max-width: 768px) {
+@media (max-width: 768px) { /* md breakpoint */
   .chart-container {
-    height: 350px;
-    max-height: 400px;
+    height: 380px; 
+    max-height: 450px;
   }
   .card {
     margin: 0.5rem;
   }
 }
+
+@media (max-width: 480px) { /* Smaller devices */
+  .chart-container {
+    height: 320px; 
+    max-height: 350px;
+  }
+  h1.text-2xl { 
+    font-size: 1.5rem; 
+  }
+  h2.text-2xl, h2.text-3xl, h2.lg\:text-4xl {
+    font-size: 1.375rem; 
+  }
+   h3.text-xl, h3.text-2xl, h3.lg\:text-3xl {
+    font-size: 1.125rem; 
+  }
+}
+
 
 /*==============================
       Print Styles
@@ -197,74 +215,198 @@ p, li {
       Carousel (Rebuilt)
 ==============================*/
 
-/* Carousel Container */
 #useCasesCarousel {
   position: relative;
-  padding: 3rem 2rem 2rem; /* top padding is for indicators */
+  /* Increased padding-top to make space for indicators */
+  padding: 2.5rem 0.5rem 0.5rem; 
   overflow: hidden;
-  min-height: 300px; /* ensure container has height to display slides */
+  min-height: 280px; 
 }
 
-#useCasesCarousel .carousel-slide h3 {
-  font-size: 1.5rem; /* Was text-xl (1.25rem) */
-  margin-bottom: 1.5rem; /* Was mb-4 (1rem) */
+@media (min-width: 640px) { /* sm breakpoint */
+  #useCasesCarousel {
+    /* Increased padding-top */
+    padding: 2.75rem 1rem 1rem;
+  }
 }
 
-/* Carousel Indicator Container */
-#carouselIndicatorsWrapper {
-  position: absolute;
-  top: 0.5rem;         /* positioned at the top */
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 20;         /* higher than slides */
+@media (min-width: 768px) { /* md breakpoint */
+  #useCasesCarousel {
+    /* Increased padding-top */
+    padding: 3.5rem 2rem 2rem; 
+  }
 }
 
-/* The container that will move (holds all slides) */
-#useCasesCarousel .carousel-slides {
-  display: flex; /* Lay out slides in a row */
-  /* Tailwind classes 'transition-transform duration-500 ease-in-out' in HTML will handle this:
-     transition: transform 0.5s ease-in-out; */
-  height: 100%; /* Fill the height set by JS on #useCasesCarousel */
-}
-
-/* Individual Carousel Slides for SLIDING effect */
 #useCasesCarousel .carousel-slide {
-  width: 100%;      /* Each slide takes the full width of the viewport (#useCasesCarousel) */
-  flex-shrink: 0; /* Prevent slides from shrinking if the container is too small */
-  box-sizing: border-box; /* Include padding and border in the element's total width and height */
-
-  /* Keep/update existing styles for content presentation within the slide */
-  background-color: #F2EDEB; /* Ollion White */
+  width: 100%;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  background-color: #F2EDEB; 
   border-radius: 0.5rem;
   box-shadow: 0 2px 6px rgba(18,19,15,0.1);
-  padding: 2.5rem; /* Adjusted padding from your previous modifications */
-  /* Ensure any text alignment or specific layout styles are appropriate */
+  padding: 0.75rem; /* Default p-3 for smallest screens */
 }
 
-/* Reduce spacing for text inside slides */
 #useCasesCarousel .carousel-slide p,
 #useCasesCarousel .carousel-slide li {
-  font-size: 1rem; /* Ensures base size, was inheriting */
-  line-height: 1.3; /* Was 1.3, more readable */
-  margin-bottom: 0.75rem; /* Was 0.5rem, more spacing */
+  word-break: break-word; 
+}
+
+@media (min-width: 640px) { /* sm breakpoint */
+    #useCasesCarousel .carousel-slide {
+        padding: 1rem; 
+    }
+}
+@media (min-width: 1024px) { /* lg breakpoint */
+    #useCasesCarousel .carousel-slide {
+        padding: 1.5rem; 
+    }
+}
+
+/* Adjust text sizes within carousel slides on very small screens */
+@media (max-width: 480px) {
+    #useCasesCarousel .carousel-slide {
+        padding: 0.5rem; 
+    }
+    #useCasesCarousel .carousel-slide h3 {
+      font-size: 1rem; 
+      margin-bottom: 0.5rem; 
+    }
+    #useCasesCarousel .carousel-slide p,
+    #useCasesCarousel .carousel-slide li {
+      font-size: 0.75rem; 
+      line-height: 1.4; 
+      margin-bottom: 0.25rem; 
+    }
+     #useCasesCarousel .carousel-slide p.font-semibold { 
+        font-size: 0.8rem; 
+        margin-bottom: 0.35rem;
+    }
+    #useCasesCarousel .carousel-slide ul {
+        padding-left: 0.75rem; 
+        margin-top: 0.25rem; 
+    }
+    /* #carouselIndicatorsWrapper top adjusted below */
+    #carouselIndicatorsWrapper .text-lg { 
+        font-size: 0.875rem; 
+    }
+    #carouselIndicators .carousel-indicator { 
+        padding: 0.25rem 0.5rem; 
+        font-size: 0.75rem; 
+    }
+}
+
+/* Added a slightly less aggressive small screen for between 481px and 639px (sm breakpoint) */
+@media (min-width: 481px) and (max-width: 639px) {
+    #useCasesCarousel .carousel-slide {
+        padding: 0.75rem; 
+    }
+    #useCasesCarousel .carousel-slide h3 {
+      font-size: 1.125rem; 
+      margin-bottom: 0.6rem;
+    }
+    #useCasesCarousel .carousel-slide p,
+    #useCasesCarousel .carousel-slide li {
+      font-size: 0.825rem; 
+      line-height: 1.5;
+      margin-bottom: 0.4rem;
+    }
+    #useCasesCarousel .carousel-slide ul {
+        padding-left: 1rem; 
+    }
+}
+
+/* Ensure carousel indicator wrapper is still correctly positioned */
+#carouselIndicatorsWrapper {
+  position: absolute;
+  /* Adjusted top to be smaller, pushing it higher */
+  top: 0.25rem; 
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  /* Ensure it has a defined background for visual stacking if needed */
+  background-color: rgba(242, 237, 235, 0.9); /* Ollion White with opacity from existing styles */
+}
+
+/*==============================
+      Governance Table Responsive
+==============================*/
+@media (max-width: 768px) { /* Corresponds to Tailwind 'md' breakpoint */
+    #governance .overflow-x-auto table th,
+    #governance .overflow-x-auto table td {
+        font-size: 0.8rem; /* Slightly smaller than text-sm */
+        padding: 0.5rem 0.75rem; /* Tailwind: py-2 px-3 */
+    }
+
+    #governance .overflow-x-auto table th.text-sm { /* Targeting header specifically if it was text-sm */
+        font-size: 0.75rem; /* text-xs */
+    }
+    
+    #governance .overflow-x-auto table td.text-base { /* Targeting body cells that were text-base */
+        font-size: 0.8rem; 
+    }
+
+    #governance .overflow-x-auto table .bg-slate-50 td { /* Phase headers like "Phase 0: Mobilization..." */
+        font-size: 0.85rem; /* Keep phase headers slightly more prominent */
+        padding: 0.6rem 0.75rem;
+    }
+
+    #governance .overflow-x-auto table tfoot td {
+        font-size: 0.7rem; /* Make legend even smaller */
+        padding: 0.5rem 0.75rem;
+    }
+    #governance .overflow-x-auto table tfoot td strong {
+        margin-right: 0.5rem; /* Reduce space between legend items */
+    }
+}
+
+@media (max-width: 480px) { /* Extra small screens */
+    #governance .overflow-x-auto table th,
+    #governance .overflow-x-auto table td {
+        font-size: 0.7rem; /* Even smaller font */
+        padding: 0.35rem 0.5rem; /* Tailwind: approx py-1.5 px-2 */
+        line-height: 1.3; /* Adjust line height for smaller font */
+    }
+
+    #governance .overflow-x-auto table th.text-sm {
+        font-size: 0.65rem; 
+    }
+    
+    #governance .overflow-x-auto table td.text-base {
+        font-size: 0.7rem;
+    }
+
+    #governance .overflow-x-auto table .bg-slate-50 td {
+        font-size: 0.75rem; 
+        padding: 0.4rem 0.5rem;
+    }
+
+    #governance .overflow-x-auto table tfoot td {
+        font-size: 0.6rem; 
+        padding: 0.35rem 0.5rem;
+        letter-spacing: -0.5px; /* Tighten letter spacing if needed */
+    }
+     #governance .overflow-x-auto table tfoot td strong {
+        margin-right: 0.25rem; 
+    }
 }
 
 /*==============================
       Roadmap Info Popup Panel
 ==============================*/
 #roadmapInfoPopup {
-    background-color: #F2EDEB; /* Ollion White, or use #ffffff if preferred */
-    border: 1px solid #3B4430; /* Ollion Dark Green for border */
-    border-radius: 0.75rem; /* Consistent with .card */
-    box-shadow: 0 4px 6px -1px rgba(18,19,15,0.1), 0 2px 4px -1px rgba(18,19,15,0.06); /* Consistent with .card */
-    padding: 1.5rem; /* 24px */
-    opacity: 0; /* Hidden by default */
+    background-color: #F2EDEB;
+    border: 1px solid #3B4430;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 6px -1px rgba(18,19,15,0.1), 0 2px 4px -1px rgba(18,19,15,0.06);
+    padding: 1rem; 
+    opacity: 0;
     visibility: hidden;
     transition: opacity 0.3s ease, visibility 0.3s ease;
-    align-self: flex-start; /* Align to the top of the flex container if parent is flex */
-    max-height: 450px; /* Match chart container height or adjust as needed */
-    overflow-y: auto; /* Add scroll if content overflows */
-    height: 100%; /* Try to match chart container height */
+    align-self: flex-start;
+    max-height: 450px; 
+    overflow-y: auto;
+    height: 100%;
 }
 
 #roadmapInfoPopup.visible {
@@ -274,64 +416,72 @@ p, li {
 
 #roadmapInfoPopup h3 {
     margin-top: 0;
-    color: #12130F; /* Ollion Black */
-    font-family: 'Newsreader', serif; /* Consistent heading font */
-    font-size: 1.25em; /* Tailwind text-xl */
+    color: #12130F;
+    font-family: 'Newsreader', serif;
+    font-size: 1.125em; 
     font-weight: 600;
-    border-bottom: 2px solid #e0e0e0; /* Light border */
-    padding-bottom: 0.5rem; /* 8px */
-    margin-bottom: 1rem; /* 16px */
+    border-bottom: 1px solid #e0e0e0; 
+    padding-bottom: 0.4rem;
+    margin-bottom: 0.75rem;
 }
 
 #roadmapInfoPopup p {
-    margin: 0.5rem 0; /* 8px */
-    line-height: 1.6;
-    color: #12130F; /* Ollion Black */
-    font-size: 0.9em;
+    margin: 0.4rem 0;
+    line-height: 1.5;
+    color: #12130F;
+    font-size: 0.875em; 
 }
 #roadmapInfoPopup strong {
-    color: #3B4430; /* Ollion Dark Green */
+    color: #3B4430;
     font-weight: 600;
 }
 #roadmapInfoPopup .activities-title {
-    margin-top: 1rem; /* 16px */
-    font-weight: 600; /* Ollion Dark Green already applied via strong */
+    margin-top: 0.75rem;
+    font-weight: 600;
+     font-size: 0.875em; 
 }
 #roadmapInfoPopup ul {
     list-style-type: disc;
-    margin-left: 1.25rem; /* 20px */
+    margin-left: 1rem; 
     padding-left: 0;
 }
 #roadmapInfoPopup ul li {
-    margin-bottom: 0.25rem; /* 4px */
-    font-size: 0.85em;
-}
-
-/* Adjust existing .chart-container for flex layout */
-/* Ensure it doesn't try to center itself with margin: auto if it's a flex item */
-.chart-container {
-    /* position: relative; */ /* Already there */
-    /* width: 100%; */ /* This will be controlled by flex-basis or Tailwind width class */
-    /* max-width: 900px; */ /* This might be too restrictive in a flex layout, consider removing or adjusting */
-    /* margin: 0 auto; */ /* Remove if it's a flex item */
-    height: 450px; /* Keep this for consistent height */
-    /* max-height: 600px; */ /* Already there */
+    margin-bottom: 0.2rem;
+    font-size: 0.8em; 
 }
 
 /* Responsive adjustments for the roadmap section specifically */
-@media (max-width: 767px) { /* md breakpoint in Tailwind is 768px */
-    #roadmap .flex.flex-col.md\:flex-row { /* Target the specific flex container */
+@media (max-width: 767px) { 
+    #roadmap .flex.flex-col.md\:flex-row {
         flex-direction: column;
     }
     #roadmap .chart-container.md\:w-2\/3,
     #roadmap #roadmapInfoPopup.md\:w-1\/3 {
-        width: 100%; /* Full width when stacked */
+        width: 100%;
     }
     #roadmapInfoPopup {
-        max-height: 300px; /* Adjust for smaller screens if stacked */
-        margin-top: 1.5rem; /* Add some space when stacked */
+        max-height: 300px; 
+        margin-top: 1rem; 
+        height: auto; 
     }
 }
+
+@media (max-width: 480px) {
+    #roadmapInfoPopup {
+        max-height: 250px; 
+        padding: 0.75rem;
+    }
+    #roadmapInfoPopup h3 {
+        font-size: 1em; 
+    }
+    #roadmapInfoPopup p, #roadmapInfoPopup .activities-title {
+        font-size: 0.8em;
+    }
+    #roadmapInfoPopup ul li {
+        font-size: 0.75em;
+    }
+}
+
 
 /*==============================
       Footer

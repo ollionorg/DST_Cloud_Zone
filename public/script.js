@@ -2,8 +2,8 @@
 document.addEventListener('DOMContentLoaded', function () {
     const navLinks = document.querySelectorAll('.nav-link');
     const sections = document.querySelectorAll('.content-section');
-    const mobileMenuButton = document.getElementById('mobileMenuButton');
-    const mainNav = document.getElementById('mainNav');
+    // const mobileMenuButton = document.getElementById('mobileMenuButton'); // Removed
+    const mainNav = document.getElementById('mainNav'); // Still used
 
     const messageModal = document.getElementById('messageModal');
     const modalMessageText = document.getElementById('modalMessageText');
@@ -18,12 +18,6 @@ document.addEventListener('DOMContentLoaded', function () {
         messageModal.style.display = 'none';
     });
 
-    // Mobile menu toggle
-    mobileMenuButton?.addEventListener('click', () => {
-        mainNav.classList.toggle('hidden');
-        mainNav.classList.toggle('flex');
-    });
-
     // Update active section based on URL hash
     function updateActiveSection() {
         let currentSectionId = 'overview'; // Default section
@@ -36,18 +30,15 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
         
-        // First, hide all sections
         sections.forEach(section => {
             section.classList.remove('active');
         });
 
-        // Then, show the current section
         const currentSection = document.getElementById(currentSectionId);
         if (currentSection) {
             currentSection.classList.add('active');
         }
 
-        // Update navigation links
         navLinks.forEach(link => {
             if (link.getAttribute('href') === '#' + currentSectionId) {
                 link.classList.add('active');
@@ -71,11 +62,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
             navLinks.forEach(navLink => navLink.classList.remove('active'));
             this.classList.add('active');
-
-            if (mainNav.classList.contains('flex') && !mainNav.classList.contains('md:flex')) {
-                mainNav.classList.add('hidden');
-                mainNav.classList.remove('flex');
-            }
         });
     });
     
@@ -86,7 +72,6 @@ document.addEventListener('DOMContentLoaded', function () {
             const content = this.nextElementSibling;
             const icon = this.querySelector('.text-xl');
             
-            // Close other open accordions within the same parent group
             const parentGroup = this.closest('.space-y-4');
             if (parentGroup) {
                 parentGroup.querySelectorAll('.accordion-content').forEach(item => {
@@ -202,18 +187,16 @@ document.addEventListener('DOMContentLoaded', function () {
         let currentIndex = 0;
         const totalSlides = slides.length;
 
-        // If there are no slides, abort carousel setup.
         if (totalSlides === 0) {
             console.warn("No slides found for use cases carousel. Aborting carousel setup.");
-            if (carousel) carousel.style.display = 'none'; // Optionally hide the entire carousel section
+            if (carousel) carousel.style.display = 'none'; 
             return;
         }
 
         carousel.setAttribute('tabindex', '0');
 
-        // Generate indicators
         if (indicatorsContainer) {
-            indicatorsContainer.innerHTML = ''; // Clear existing (if any)
+            indicatorsContainer.innerHTML = ''; 
             slides.forEach((_, idx) => {
                 const dot = document.createElement('button');
                 dot.classList.add(
@@ -223,7 +206,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 dot.setAttribute('data-slide-to', idx);
                 dot.setAttribute('aria-label', `View use case ${idx + 1}`);
                 dot.textContent = idx + 1;
-                if (idx === currentIndex) { // Initially currentIndex is 0
+                if (idx === currentIndex) { 
                     dot.classList.add('bg-gray-800', 'text-white');
                     dot.classList.remove('bg-gray-400', 'text-black');
                 } else {
@@ -263,8 +246,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
         let autoplayIntervalId = null;
         function startAutoplay() {
-            stopAutoplay(); // Clear any existing interval
-            if (totalSlides > 1) { // Only autoplay if there's more than one slide
+            stopAutoplay(); 
+            if (totalSlides > 1) { 
                 autoplayIntervalId = setInterval(() => showSlide(currentIndex + 1), 5000);
             }
         }
@@ -289,17 +272,20 @@ document.addEventListener('DOMContentLoaded', function () {
         carousel.addEventListener('touchend', e => {
             if (e.changedTouches && e.changedTouches.length > 0) {
               const endX = e.changedTouches[0].screenX;
-              if (endX - startX > 50) showSlide(currentIndex - 1); // Swipe right
-              if (startX - endX > 50) showSlide(currentIndex + 1); // Swipe left
+              if (endX - startX > 50) showSlide(currentIndex - 1); 
+              if (startX - endX > 50) showSlide(currentIndex + 1); 
             }
         });
 
         function setFixedCarouselHeight() {
-            const currentSlidesForHeight = document.querySelectorAll('#useCasesCarousel .carousel-slide');
+            const carouselElement = document.getElementById('useCasesCarousel');
+            if (!carouselElement) return; 
+
+            const currentSlidesForHeight = Array.from(carouselElement.querySelectorAll('.carousel-slide'));
             let maxHeight = 0;
 
             if (currentSlidesForHeight.length === 0) {
-                if (carousel) carousel.style.height = 'auto'; // Fallback if somehow slides disappear
+                carouselElement.style.height = 'auto';
                 return;
             }
 
@@ -308,9 +294,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 const originalPosition = slide.style.position;
                 const originalVisibility = slide.style.visibility;
 
-                slide.style.position = 'absolute';
-                slide.style.visibility = 'hidden';
-                slide.style.display = 'block'; // Ensure it's block for scrollHeight measurement
+                slide.style.position = 'absolute'; 
+                slide.style.visibility = 'hidden'; 
+                slide.style.display = 'block';     
 
                 const height = slide.scrollHeight;
                 if (height > maxHeight) {
@@ -321,39 +307,33 @@ document.addEventListener('DOMContentLoaded', function () {
                 slide.style.position = originalPosition;
                 slide.style.visibility = originalVisibility;
             });
+            
+            const isMobile = window.innerWidth < 768;
+            // Adjusted PADDING_AND_CONTROLS_HEIGHT and MIN_CAROUSEL_HEIGHT
+            const PADDING_AND_CONTROLS_HEIGHT = isMobile ? (window.innerWidth < 480 ? 60 : 80) : 120; 
+            const MIN_CAROUSEL_HEIGHT = isMobile ? (window.innerWidth < 480 ? 320 : 350) : 450;
 
-            const PADDING_AND_CONTROLS_HEIGHT = 160; // From your original script, represents estimated extra vertical space
-            const MIN_CAROUSEL_HEIGHT = 550;       // From your original script
 
             const finalHeight = Math.max(maxHeight + PADDING_AND_CONTROLS_HEIGHT, MIN_CAROUSEL_HEIGHT);
-            if (carousel) {
-                carousel.style.height = finalHeight + 'px';
-            }
-            // console.log('Set carousel height to', finalHeight); // Keep for debugging if needed
+            carouselElement.style.height = finalHeight + 'px';
         }
 
-        // Initial setup on window load to ensure images and other content are loaded
         window.addEventListener('load', function() {
-            if (totalSlides > 0) { // Ensure this runs only if slides exist
-                setFixedCarouselHeight(); // Calculate and set height first
-                updateCarousel();       // Position the first slide correctly
-                startAutoplay();        // Then start autoplay
+            if (totalSlides > 0) { 
+                setFixedCarouselHeight(); 
+                updateCarousel();       
+                startAutoplay();        
             }
-            // Re-calculate height on resize
             window.addEventListener('resize', setFixedCarouselHeight);
         });
 
-        // If there's only one slide, ensure controls that don't make sense are hidden/disabled
         if (totalSlides <= 1) {
             if (prevButton) prevButton.style.display = 'none';
             if (nextButton) nextButton.style.display = 'none';
             if (indicatorsContainer) indicatorsContainer.style.display = 'none';
-            // Stop autoplay (already handled by startAutoplay condition, but good to be explicit)
             stopAutoplay();
-             // Adjust styling of the indicators wrapper if only "Use Case" text remains
             const indicatorsWrapper = document.getElementById('carouselIndicatorsWrapper');
             if(indicatorsWrapper && indicatorsContainer && indicatorsContainer.children.length === 0) {
-                 // Example: you might want to hide the "Use Case" label too or adjust its padding
                  // indicatorsWrapper.querySelector('span.text-lg.font-bold').style.display = 'none';
             }
         }
@@ -395,9 +375,6 @@ function initializeRoadmapChart() {
         return;
     }
 
-    // Ensure all helper functions (hexToRgba, getPhaseColorKey) and
-    // data definitions (phaseColors, allPhasesData, etc.) are present
-    // from your previous working version.
     const infoPopup = document.getElementById('roadmapInfoPopup');
     const popupPhaseName = document.getElementById('popupPhaseName')?.querySelector('span');
     const popupDuration = document.getElementById('popupDuration')?.querySelector('span');
@@ -468,6 +445,9 @@ function initializeRoadmapChart() {
             });
         }
     });
+    
+    const isSmallScreen = window.innerWidth < 768;
+    const isVerySmallScreen = window.innerWidth < 480;
 
     const phaseStartMarkers = allPhasesData.map((phase, index) => ({
         type: 'line',
@@ -477,19 +457,18 @@ function initializeRoadmapChart() {
         borderWidth: 1.5,
         borderDash: [5, 5],
         label: {
-            display: true,
-            content: `Phase ${index}`,
+            display: !isVerySmallScreen, // Hide on very small screens to reduce clutter
+            content: `P${index}`, // Shorter label
             position: 'start',
             font: {
-                size: 10,
+                size: isSmallScreen ? 8 : 9, // Slightly smaller font
                 weight: 'normal',
             },
             color: '#4A4A4A',
             backgroundColor: 'rgba(255, 255, 255, 0)',
-            padding: { x: 2, y: -5},
-            yAdjust: -10,
-            // MODIFIED xAdjust: Reduced the rightward shift for "Phase 1"
-            xAdjust: (phase.x[0] === 0) ? 0 : 3, // "Phase 1" shifted by 8px; others by 3px.
+            padding: { x: 1, y: -4}, // Adjusted padding
+            yAdjust: -8, // Adjusted yAdjust
+            xAdjust: (phase.x[0] === 0) ? 0 : (isSmallScreen ? 1 : 2), 
         }
     }));
 
@@ -512,8 +491,8 @@ function initializeRoadmapChart() {
                         return dataPoint.isRolloff ? hexToRgba(phaseColors[colorKey], 0.4) : phaseColors[colorKey];
                     },
                     borderWidth: 1,
-                    barPercentage: 0.7,
-                    categoryPercentage: 0.8
+                    barPercentage: isSmallScreen ? 0.6 : 0.7, // Thinner bars on small screens
+                    categoryPercentage: isSmallScreen ? 0.7 : 0.8 
                 }
             ]
         },
@@ -523,19 +502,29 @@ function initializeRoadmapChart() {
             maintainAspectRatio: false,
             layout: {
                 padding: {
-                    top: 30
+                    top: isSmallScreen ? 15 : 30, // Less top padding on small screens
+                    right: isSmallScreen ? 5 : 10,
+                    left: isSmallScreen ? 5 : 10
                 }
             },
             scales: {
                 x: {
                     title: {
                         display: true,
-                        text: 'Timeline (Illustrative Months)'
+                        text: 'Timeline (Illustrative Months)',
+                        font: {
+                            size: isSmallScreen ? 10 : 12
+                        }
                     },
                     min: 0,
                     max: 24,
                     ticks: {
-                        stepSize: 1
+                        stepSize: isSmallScreen ? 2 : 1, // Larger step on small screens
+                        font: {
+                            size: isSmallScreen ? 9 : 10
+                        },
+                        maxRotation: 0, // Prevent rotation to save space
+                        minRotation: 0
                     },
                     stacked: false
                 },
@@ -543,13 +532,17 @@ function initializeRoadmapChart() {
                     stacked: false,
                     ticks: {
                         autoSkip: false,
+                        font: {
+                           size: isSmallScreen ? 9 : 11 
+                        },
                         callback: function(value, index, values) {
                             const label = this.chart.data.labels[value];
-                            if (typeof label === 'string' && label.length > 25) {
+                            const wrapLength = isSmallScreen ? (isVerySmallScreen ? 12 : 18) : 25; // Shorter wrap length for smaller screens
+                            if (typeof label === 'string' && label.length > wrapLength) {
                                 const parts = [];
                                 let currentLine = '';
                                 label.split(' ').forEach(word => {
-                                    if ((currentLine + word).length > 25) {
+                                    if ((currentLine + word).length > wrapLength) {
                                         parts.push(currentLine.trim());
                                         currentLine = word + ' ';
                                     } else {
@@ -569,7 +562,7 @@ function initializeRoadmapChart() {
                     display: false
                 },
                 tooltip: {
-                    enabled: false
+                    enabled: false // Custom popup is used
                 },
                 annotation: {
                     clip: false,
@@ -621,6 +614,19 @@ function initializeRoadmapChart() {
         window.myRoadmapChart.destroy();
     }
     window.myRoadmapChart = new Chart(roadmapChartCtx, roadmapConfig);
+
+    // Debounced resize handler
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+            if (window.myRoadmapChart) {
+                window.myRoadmapChart.destroy();
+            }
+            initializeRoadmapChart(); // Re-initialize chart with new screen size considerations
+        }, 250);
+    });
+
 
     if (roadmapChartCtx.canvas) {
         roadmapChartCtx.canvas.addEventListener('mouseout', (event) => {

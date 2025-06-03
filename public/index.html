@@ -19,38 +19,22 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@latest/dist/chartjs-plugin-annotation.min.js"></script>
 
-    <!-- Visualization & Content Choices:
-        Report Info: Executive Summary (Sec I) -> Goal: Inform -> Presentation: Static text, key metrics in cards. -> Interaction: None. -> Justification: Provides high-level context.
-        Report Info: Landing Zones (Sec II) -> Goal: Compare & Inform -> Presentation: Text comparison (UNN vs CSP), HTML/CSS flow diagram for transition. -> Interaction: None. -> Justification: Clearly outlines foundational elements and transition.
-        Report Info: Use Cases 1-4 (Sec III) -> Goal: Organize & Inform -> Presentation: Accordion/tabbed sections for each use case detailing objectives, services, activities, deliverables. -> Interaction: Expand/collapse. -> Justification: Allows focused exploration of each value-delivery stage.
-        Report Info: Deployment Roadmap (Sec VI) -> Goal: Show Change/Progress -> Presentation: Chart.js horizontal bar chart (Gantt-like). -> Interaction: Hover for details in side panel. -> Justification: Visually represents project timeline and phases. -> Library: Chart.js.
-        Report Info: Governance (Sec VII) -> Goal: Inform -> Presentation: HTML table for RACI, text for other frameworks. -> Interaction: None. -> Justification: Presents structured governance information clearly.
-        Report Info: Service Delivery (Sec IV) -> Goal: Inform -> Presentation: Text descriptions of white-labeling model, CSP selection, cross-cloud governance. -> Interaction: None. -> Justification: Explains the operational model.
-        Report Info: Key Considerations (Sec VIII) -> Goal: Inform -> Presentation: Expandable sections for key topics. -> Interaction: Expand/collapse. -> Justification: Highlights important long-term factors.
-        Report Info: Glossary (Appendix B) -> Goal: Inform/Organize -> Presentation: HTML list/table. -> Interaction: None (Future: filter/search). -> Justification: Provides definitions.
-        CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. All diagrams will be HTML/CSS based. -->
-</head>
+    </head>
 <body class="text-gray-800">
-
-    <header class="bg-white shadow-md sticky top-0 z-50">
+    <header class="bg-white shadow-md md:sticky md:top-0 md:z-50">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <h1 class="text-2xl font-bold accent-color">DST Multi-Cloud Transformation</h1>
-                <button id="mobileMenuButton" class="md:hidden p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100">
-                    <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
-                    </svg>
-                </button>
             </div>
-            <nav id="mainNav" class="hidden md:flex flex-col md:flex-row md:space-x-6 py-2 border-t md:border-t-0">
-                <a href="#overview" class="nav-link py-2 px-1 border-b-2 border-transparent hover:border-blue-500 hover:text-blue-600">Overview</a>
-                <a href="#landingzones" class="nav-link py-2 px-1 border-b-2 border-transparent hover:border-blue-500 hover:text-blue-600">Foundational Deployments</a>
-                <a href="#useCases" class="nav-link py-2 px-1 border-b-2 border-transparent hover:border-blue-500 hover:text-blue-600">Use Cases</a>
-                <a href="#roadmap" class="nav-link py-2 px-1 border-b-2 border-transparent hover:border-blue-500 hover:text-blue-600">Roadmap</a>
-                <a href="#serviceDelivery" class="nav-link py-2 px-1 border-b-2 border-transparent hover:border-blue-500 hover:text-blue-600">Service Delivery</a>
-                <a href="#governance" class="nav-link py-2 px-1 border-b-2 border-transparent hover:border-blue-500 hover:text-blue-600">Governance</a>
-                <a href="#keyConsiderations" class="nav-link py-2 px-1 border-b-2 border-transparent hover:border-blue-500 hover:text-blue-600">Considerations</a>
-                <a href="#glossary" class="nav-link py-2 px-1 border-b-2 border-transparent hover:border-blue-500 hover:text-blue-600">Glossary</a>
+            <nav id="mainNav" class="flex flex-col space-y-1 md:flex-row md:items-center md:space-y-0 md:space-x-6 py-2 border-t md:border-t-0">
+                <a href="#overview" class="nav-link w-full md:w-auto px-3 py-2 md:px-1 text-left md:text-left border-b-2 border-transparent hover:border-blue-500 hover:text-blue-600 whitespace-nowrap">Overview</a>
+                <a href="#landingzones" class="nav-link w-full md:w-auto px-3 py-2 md:px-1 text-left md:text-left border-b-2 border-transparent hover:border-blue-500 hover:text-blue-600 whitespace-nowrap">Foundational Deployments</a>
+                <a href="#useCases" class="nav-link w-full md:w-auto px-3 py-2 md:px-1 text-left md:text-left border-b-2 border-transparent hover:border-blue-500 hover:text-blue-600 whitespace-nowrap">Use Cases</a>
+                <a href="#roadmap" class="nav-link w-full md:w-auto px-3 py-2 md:px-1 text-left md:text-left border-b-2 border-transparent hover:border-blue-500 hover:text-blue-600 whitespace-nowrap">Roadmap</a>
+                <a href="#serviceDelivery" class="nav-link w-full md:w-auto px-3 py-2 md:px-1 text-left md:text-left border-b-2 border-transparent hover:border-blue-500 hover:text-blue-600 whitespace-nowrap">Service Delivery</a>
+                <a href="#governance" class="nav-link w-full md:w-auto px-3 py-2 md:px-1 text-left md:text-left border-b-2 border-transparent hover:border-blue-500 hover:text-blue-600 whitespace-nowrap">Governance</a>
+                <a href="#keyConsiderations" class="nav-link w-full md:w-auto px-3 py-2 md:px-1 text-left md:text-left border-b-2 border-transparent hover:border-blue-500 hover:text-blue-600 whitespace-nowrap">Considerations</a>
+                <a href="#glossary" class="nav-link w-full md:w-auto px-3 py-2 md:px-1 text-left md:text-left border-b-2 border-transparent hover:border-blue-500 hover:text-blue-600 whitespace-nowrap">Glossary</a>
             </nav>
         </div>
     </header>
@@ -60,7 +44,7 @@
             <div class="hero-banner-container w-full h-64 md:h-80 overflow-hidden rounded-lg mb-6 relative">
                 <img src="images/dstxollion.png"
                     alt="DST and Ollion Collaboration Banner"
-                    class="absolute w-full h-full object-cover object-center" />
+                    class="absolute w-full h-full object-contain object-center" />
             </div>
             <div class="card p-6">
                 <h2 class="text-2xl font-semibold mb-4">Executive Overview</h2>
@@ -103,17 +87,20 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     
                     <div class="p-4 rounded-lg ">
-                        <img src="images/landingzones.webp" alt="Landing Zones Image" class="mb-4 max-w-xs mx-auto h-auto rounded-lg">  <h3 class="text-lg font-semibold mb-2 accent-color">Landing Zones</h3>
+                        <img src="images/landingzones.webp" alt="Landing Zones Image" class="block w-full max-w-xs mx-auto h-auto rounded-lg mb-4">
+                        <h3 class="text-lg font-semibold mb-2 accent-color">Landing Zones</h3>
                         <p class="text-sm md:text-base">The Cloud Landing Zone (LZ) is the cornerstone of DST's Cloud Zone strategy. Its purpose is to establish a secure, compliant, scalable, and well-governed foundation that will host and manage all cloud services offered by DST.</p>
                     </div>
 
                     <div class="p-4 rounded-lg ">
-                        <img src="images/unnbased.webp" alt="Initial UNN-Based LZ Image" class="mb-4 max-w-xs mx-auto h-auto rounded-lg"> <h3 class="text-lg font-semibold mb-2 accent-color">Initial UNN-Based LZ (Private Cloud Focus)</h3>
+                        <img src="images/unnbased.webp" alt="Initial UNN-Based LZ Image" class="block w-full max-w-xs mx-auto h-auto rounded-lg mb-4">
+                        <h3 class="text-lg font-semibold mb-2 accent-color">Initial UNN-Based LZ (Private Cloud Focus)</h3>
                         <p class="text-sm md:text-base">This deployment phase will establish a robust landing zone within DST's existing UNN infrastructure. This private cloud landing zone will support initial use cases and pave the way for CSP integration.</p>
                     </div>
 
                     <div class="p-4 rounded-lg ">
-                        <img src="images/whitelabel.webp" alt="Transition to White-Labeled CSP LZs Image" class="mb-4 max-w-xs mx-auto h-auto rounded-lg"> <h3 class="text-lg font-semibold mb-2 accent-color">Transition to White-Labeled CSP LZs</h3>
+                        <img src="images/whitelabel.webp" alt="Transition to White-Labeled CSP LZs Image" class="block w-full max-w-xs mx-auto h-auto rounded-lg mb-4">
+                        <h3 class="text-lg font-semibold mb-2 accent-color">Transition to White-Labeled CSP LZs</h3>
                         <p class="text-sm md:text-base">This phase leverages CSP-specific strengths (e.g., AWS for broad IaaS, Azure for Microsoft workloads, Google Cloud for data analytics/ML), enhanced scalability, access to advanced services, global reach, and cost optimization via pay-as-you-go models.</p>
                     </div>
                     
@@ -297,7 +284,7 @@
         <section id="roadmap" class="content-section">
             <div class="card p-6">
                 <h2 class="text-2xl font-semibold mb-4">Deployment Roadmap & Timeline</h2>
-                <p class="mb-4">This roadmap elaborates on the high-level schedule (Proposal Slide 23), providing a granular breakdown of phases, activities, and key milestones. Timelines are indicative and will be refined. Note: Illustrative durations are used for visualization as exacts are pending detailed Phase 0 planning.</p>
+                <p class="mb-4">This roadmap elaborates on the high-level schedule (Proposal Slide 23), providing a granular breakdown of phases, activities, and key milestones. Timelines are indicative and will be refined. Note: Illustrative durations are used for visualization as exacts are pending detailed Phase 0 planning. <strong>Press or hover over any of the colored phase bars in the chart below to see more detailed information about that phase.</strong></p>
                 
                 <div class="flex flex-col md:flex-row gap-6">
                     <div class="chart-container md:w-2/3"> <canvas id="roadmapChart"></canvas>
@@ -381,13 +368,13 @@
                     <tbody class="divide-y divide-gray-200">
                         <tr><td colspan="4" class="px-6 py-3 font-semibold text-base bg-slate-50 text-slate-700">Phase 0: Mobilization & Planning</td></tr>
                         <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-base text-gray-700">Detailed Project Plan & Governance Framework</td>
+                            <td class="px-6 py-4 md:whitespace-nowrap text-base text-gray-700">Detailed Project Plan & Governance Framework</td>
                             <td class="px-6 py-4 text-base text-gray-700">R, A</td>
                             <td class="px-6 py-4 text-base text-gray-700">C, I</td>
                             <td class="px-6 py-4 text-base text-gray-700">I</td>
                         </tr>
                         <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-base text-gray-700">UNN Landing Zone Design Document</td>
+                            <td class="px-6 py-4 md:whitespace-nowrap text-base text-gray-700">UNN Landing Zone Design Document</td>
                             <td class="px-6 py-4 text-base text-gray-700">R, A</td>
                             <td class="px-6 py-4 text-base text-gray-700">C, I (policy inputs)</td>
                             <td class="px-6 py-4 text-base text-gray-700">I</td>
@@ -395,13 +382,13 @@
                         
                         <tr><td colspan="4" class="px-6 py-3 font-semibold text-base bg-slate-50 text-slate-700">Phase 1: Foundation & IaaS (Weeks 1-4)</td></tr>
                         <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-base text-gray-700">Build & Validation of UNN LZ</td>
+                            <td class="px-6 py-4 md:whitespace-nowrap text-base text-gray-700">Build & Validation of UNN LZ</td>
                             <td class="px-6 py-4 text-base text-gray-700">R, A</td>
                             <td class="px-6 py-4 text-base text-gray-700">C, I (resource access, approvals)</td>
                             <td class="px-6 py-4 text-base text-gray-700">I (if hardware/software)</td>
                         </tr>
                         <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-base text-gray-700">Pilot Workload Migration to UNN</td>
+                            <td class="px-6 py-4 md:whitespace-nowrap text-base text-gray-700">Pilot Workload Migration to UNN</td>
                             <td class="px-6 py-4 text-base text-gray-700">R, A</td>
                             <td class="px-6 py-4 text-base text-gray-700">R (app expertise, UAT), C</td>
                             <td class="px-6 py-4 text-base text-gray-700"></td>
@@ -409,13 +396,13 @@
 
                         <tr><td colspan="4" class="px-6 py-3 font-semibold text-base bg-slate-50 text-slate-700">Phase 2: Expansion (Weeks 5-9)</td></tr>
                         <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-base text-gray-700">Application & Data Portfolio Assessment</td>
+                            <td class="px-6 py-4 md:whitespace-nowrap text-base text-gray-700">Application & Data Portfolio Assessment</td>
                             <td class="px-6 py-4 text-base text-gray-700">R, A</td>
                             <td class="px-6 py-4 text-base text-gray-700">R (providing information), C</td>
                             <td class="px-6 py-4 text-base text-gray-700"></td>
                         </tr>
                         <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-base text-gray-700">Migration & Data Architecture Design</td>
+                            <td class="px-6 py-4 md:whitespace-nowrap text-base text-gray-700">Migration & Data Architecture Design</td>
                             <td class="px-6 py-4 text-base text-gray-700">R, A</td>
                             <td class="px-6 py-4 text-base text-gray-700">C, I (requirements)</td>
                             <td class="px-6 py-4 text-base text-gray-700"></td>
@@ -423,13 +410,13 @@
 
                         <tr><td colspan="4" class="px-6 py-3 font-semibold text-base bg-slate-50 text-slate-700">Phase 3: Scaling (Weeks 10-14+)</td></tr>
                         <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-base text-gray-700">Application Migration/Modernization to CSPs</td>
+                            <td class="px-6 py-4 md:whitespace-nowrap text-base text-gray-700">Application Migration/Modernization to CSPs</td>
                             <td class="px-6 py-4 text-base text-gray-700">R, A</td>
                             <td class="px-6 py-4 text-base text-gray-700">R (app expertise, UAT, business logic), C</td>
                             <td class="px-6 py-4 text-base text-gray-700">I</td>
                         </tr>
                         <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-base text-gray-700">DRaaS Solution Implementation</td>
+                            <td class="px-6 py-4 md:whitespace-nowrap text-base text-gray-700">DRaaS Solution Implementation</td>
                             <td class="px-6 py-4 text-base text-gray-700">R, A</td>
                             <td class="px-6 py-4 text-base text-gray-700">R (BIA, RTO/RPO, test participation), C</td>
                             <td class="px-6 py-4 text-base text-gray-700">I (DR tool vendor)</td>
@@ -437,13 +424,13 @@
 
                         <tr><td colspan="4" class="px-6 py-3 font-semibold text-base bg-slate-50 text-slate-700">Phase 4: Optimization & Maturity (From Week 15+)</td></tr>
                         <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-base text-gray-700">Service Management & Cost Optimization</td>
+                            <td class="px-6 py-4 md:whitespace-nowrap text-base text-gray-700">Service Management & Cost Optimization</td>
                             <td class="px-6 py-4 text-base text-gray-700">R, A</td>
                             <td class="px-6 py-4 text-base text-gray-700">I (approvals for changes)</td>
                             <td class="px-6 py-4 text-base text-gray-700"></td>
                         </tr>
                         <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-base text-gray-700">Governance & Security Monitoring</td>
+                            <td class="px-6 py-4 md:whitespace-nowrap text-base text-gray-700">Governance & Security Monitoring</td>
                             <td class="px-6 py-4 text-base text-gray-700">R, A</td>
                             <td class="px-6 py-4 text-base text-gray-700">I</td>
                             <td class="px-6 py-4 text-base text-gray-700"></td>
