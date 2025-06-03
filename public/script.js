@@ -197,107 +197,166 @@ document.addEventListener('DOMContentLoaded', function () {
         const prevButton = document.getElementById('carouselPrevBtn');
         const nextButton = document.getElementById('carouselNextBtn');
         const indicatorsContainer = document.getElementById('carouselIndicators');
-        const slidesContainer = carousel.querySelector('.carousel-slides'); 
+        const slidesContainer = carousel.querySelector('.carousel-slides');
 
         let currentIndex = 0;
         const totalSlides = slides.length;
 
+        // If there are no slides, abort carousel setup.
+        if (totalSlides === 0) {
+            console.warn("No slides found for use cases carousel. Aborting carousel setup.");
+            if (carousel) carousel.style.display = 'none'; // Optionally hide the entire carousel section
+            return;
+        }
+
         carousel.setAttribute('tabindex', '0');
 
-        indicatorsContainer.innerHTML = '';
-        slides.forEach((_, idx) => {
-          const dot = document.createElement('button');
-          dot.classList.add(
-            'carousel-indicator',
-            'px-3', 'py-1', 'text-sm', 'font-medium',
-            'rounded-full', 'hover:bg-gray-600', 'focus:outline-none', 'transition-colors'
-          );
-          dot.setAttribute('data-slide-to', idx);
-          dot.setAttribute('aria-label', `View use case ${idx + 1}`);
-          dot.textContent = idx + 1;
-          if (idx === 0) {
-            dot.classList.add('bg-gray-800', 'text-white');
-          } else {
-            dot.classList.add('bg-gray-400', 'text-black');
-          }
-          indicatorsContainer.appendChild(dot);
-        });
-        const indicators = Array.from(indicatorsContainer.children);
+        // Generate indicators
+        if (indicatorsContainer) {
+            indicatorsContainer.innerHTML = ''; // Clear existing (if any)
+            slides.forEach((_, idx) => {
+                const dot = document.createElement('button');
+                dot.classList.add(
+                    'carousel-indicator', 'px-3', 'py-1', 'text-sm', 'font-medium',
+                    'rounded-full', 'hover:bg-gray-600', 'focus:outline-none', 'transition-colors'
+                );
+                dot.setAttribute('data-slide-to', idx);
+                dot.setAttribute('aria-label', `View use case ${idx + 1}`);
+                dot.textContent = idx + 1;
+                if (idx === currentIndex) { // Initially currentIndex is 0
+                    dot.classList.add('bg-gray-800', 'text-white');
+                    dot.classList.remove('bg-gray-400', 'text-black');
+                } else {
+                    dot.classList.add('bg-gray-400', 'text-black');
+                    dot.classList.remove('bg-gray-800', 'text-white');
+                }
+                dot.addEventListener('click', e => showSlide(+e.currentTarget.dataset.slideTo));
+                indicatorsContainer.appendChild(dot);
+            });
+        }
+        const indicators = indicatorsContainer ? Array.from(indicatorsContainer.children) : [];
 
         function updateCarousel() {
-          if (slidesContainer) {
-            slidesContainer.style.transform = `translateX(-${currentIndex * 100}%)`;
-          }
-          indicators.forEach((dot, i) => {
-            if (i === currentIndex) {
-              dot.classList.add('bg-gray-800', 'text-white');
-              dot.classList.remove('bg-gray-400', 'text-black');
-            } else {
-              dot.classList.add('bg-gray-400', 'text-black');
-              dot.classList.remove('bg-gray-800', 'text-white');
+            if (slidesContainer) {
+                slidesContainer.style.transform = `translateX(-${currentIndex * 100}%)`;
             }
-          });
+            if (indicators.length > 0) {
+                indicators.forEach((dot, i) => {
+                    if (i === currentIndex) {
+                        dot.classList.add('bg-gray-800', 'text-white');
+                        dot.classList.remove('bg-gray-400', 'text-black');
+                    } else {
+                        dot.classList.add('bg-gray-400', 'text-black');
+                        dot.classList.remove('bg-gray-800', 'text-white');
+                    }
+                });
+            }
         }
 
         function showSlide(i) {
-          currentIndex = (i + totalSlides) % totalSlides;
-          updateCarousel();
+            currentIndex = (i + totalSlides) % totalSlides;
+            updateCarousel();
         }
 
-        nextButton.addEventListener('click', () => showSlide(currentIndex + 1));
-        prevButton.addEventListener('click', () => showSlide(currentIndex - 1));
-        indicators.forEach(dot =>
-          dot.addEventListener('click', e => showSlide(+e.currentTarget.dataset.slideTo))
-        );
+        if (nextButton) nextButton.addEventListener('click', () => showSlide(currentIndex + 1));
+        if (prevButton) prevButton.addEventListener('click', () => showSlide(currentIndex - 1));
 
-        let autoplay = setInterval(() => showSlide(currentIndex + 1), 5000);
-        carousel.addEventListener('mouseenter', () => clearInterval(autoplay));
-        carousel.addEventListener('mouseleave', () =>
-          autoplay = setInterval(() => showSlide(currentIndex + 1), 5000)
-        );
+        let autoplayIntervalId = null;
+        function startAutoplay() {
+            stopAutoplay(); // Clear any existing interval
+            if (totalSlides > 1) { // Only autoplay if there's more than one slide
+                autoplayIntervalId = setInterval(() => showSlide(currentIndex + 1), 5000);
+            }
+        }
+        function stopAutoplay() {
+            clearInterval(autoplayIntervalId);
+        }
+
+        carousel.addEventListener('mouseenter', stopAutoplay);
+        carousel.addEventListener('mouseleave', startAutoplay);
 
         carousel.addEventListener('keydown', e => {
-          if (e.key === 'ArrowRight') showSlide(currentIndex + 1);
-          if (e.key === 'ArrowLeft') showSlide(currentIndex - 1);
+            if (e.key === 'ArrowRight') showSlide(currentIndex + 1);
+            if (e.key === 'ArrowLeft') showSlide(currentIndex - 1);
         });
 
         let startX = 0;
-        carousel.addEventListener('touchstart', e => startX = e.changedTouches[0].screenX);
-        carousel.addEventListener('touchend', e => {
-          const endX = e.changedTouches[0].screenX;
-          if (endX - startX > 50) showSlide(currentIndex - 1);
-          if (startX - endX > 50) showSlide(currentIndex + 1);
-        });
-        
-        function setFixedCarouselHeight() {
-          const currentSlides = document.querySelectorAll('#useCasesCarousel .carousel-slide');
-          let maxHeight = 0;
-          
-          currentSlides.forEach((slide, i) => {
-            const originalDisplay = slide.style.display;
-            slide.style.display = 'block'; 
-            slide.style.position = 'absolute'; 
-            slide.style.visibility = 'hidden';
-
-            const height = slide.scrollHeight;
-            if (height > maxHeight) {
-              maxHeight = height;
+        carousel.addEventListener('touchstart', e => {
+            if (e.changedTouches && e.changedTouches.length > 0) {
+              startX = e.changedTouches[0].screenX;
             }
-            slide.style.display = originalDisplay;
-            slide.style.position = '';
-            slide.style.visibility = '';
-          });
-          
-          const finalHeight = Math.max(maxHeight + 160, 550); 
-          document.querySelector('#useCasesCarousel').style.height = finalHeight + 'px';
-          console.log('Set carousel height to', finalHeight);
+        }, { passive: true });
+        carousel.addEventListener('touchend', e => {
+            if (e.changedTouches && e.changedTouches.length > 0) {
+              const endX = e.changedTouches[0].screenX;
+              if (endX - startX > 50) showSlide(currentIndex - 1); // Swipe right
+              if (startX - endX > 50) showSlide(currentIndex + 1); // Swipe left
+            }
+        });
+
+        function setFixedCarouselHeight() {
+            const currentSlidesForHeight = document.querySelectorAll('#useCasesCarousel .carousel-slide');
+            let maxHeight = 0;
+
+            if (currentSlidesForHeight.length === 0) {
+                if (carousel) carousel.style.height = 'auto'; // Fallback if somehow slides disappear
+                return;
+            }
+
+            currentSlidesForHeight.forEach(slide => {
+                const originalDisplay = slide.style.display;
+                const originalPosition = slide.style.position;
+                const originalVisibility = slide.style.visibility;
+
+                slide.style.position = 'absolute';
+                slide.style.visibility = 'hidden';
+                slide.style.display = 'block'; // Ensure it's block for scrollHeight measurement
+
+                const height = slide.scrollHeight;
+                if (height > maxHeight) {
+                    maxHeight = height;
+                }
+
+                slide.style.display = originalDisplay;
+                slide.style.position = originalPosition;
+                slide.style.visibility = originalVisibility;
+            });
+
+            const PADDING_AND_CONTROLS_HEIGHT = 160; // From your original script, represents estimated extra vertical space
+            const MIN_CAROUSEL_HEIGHT = 550;       // From your original script
+
+            const finalHeight = Math.max(maxHeight + PADDING_AND_CONTROLS_HEIGHT, MIN_CAROUSEL_HEIGHT);
+            if (carousel) {
+                carousel.style.height = finalHeight + 'px';
+            }
+            // console.log('Set carousel height to', finalHeight); // Keep for debugging if needed
         }
 
+        // Initial setup on window load to ensure images and other content are loaded
         window.addEventListener('load', function() {
-          updateCarousel();
-          setFixedCarouselHeight();
-          window.addEventListener('resize', setFixedCarouselHeight);
+            if (totalSlides > 0) { // Ensure this runs only if slides exist
+                setFixedCarouselHeight(); // Calculate and set height first
+                updateCarousel();       // Position the first slide correctly
+                startAutoplay();        // Then start autoplay
+            }
+            // Re-calculate height on resize
+            window.addEventListener('resize', setFixedCarouselHeight);
         });
+
+        // If there's only one slide, ensure controls that don't make sense are hidden/disabled
+        if (totalSlides <= 1) {
+            if (prevButton) prevButton.style.display = 'none';
+            if (nextButton) nextButton.style.display = 'none';
+            if (indicatorsContainer) indicatorsContainer.style.display = 'none';
+            // Stop autoplay (already handled by startAutoplay condition, but good to be explicit)
+            stopAutoplay();
+             // Adjust styling of the indicators wrapper if only "Use Case" text remains
+            const indicatorsWrapper = document.getElementById('carouselIndicatorsWrapper');
+            if(indicatorsWrapper && indicatorsContainer && indicatorsContainer.children.length === 0) {
+                 // Example: you might want to hide the "Use Case" label too or adjust its padding
+                 // indicatorsWrapper.querySelector('span.text-lg.font-bold').style.display = 'none';
+            }
+        }
     }
 
     const tabItems = document.querySelectorAll('#keyConsiderationsMenu .tab-item');
@@ -419,15 +478,15 @@ function initializeRoadmapChart() {
         borderDash: [5, 5],
         label: {
             display: true,
-            content: `Phase ${index + 1}`,
+            content: `Phase ${index}`,
             position: 'start',
             font: {
-                size: 9,
+                size: 10,
                 weight: 'normal',
             },
             color: '#4A4A4A',
             backgroundColor: 'rgba(255, 255, 255, 0)',
-            padding: { x: 2, y: 1 },
+            padding: { x: 2, y: -5},
             yAdjust: -10,
             // MODIFIED xAdjust: Reduced the rightward shift for "Phase 1"
             xAdjust: (phase.x[0] === 0) ? 0 : 3, // "Phase 1" shifted by 8px; others by 3px.
@@ -464,7 +523,7 @@ function initializeRoadmapChart() {
             maintainAspectRatio: false,
             layout: {
                 padding: {
-                    top: 40
+                    top: 30
                 }
             },
             scales: {
