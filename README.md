@@ -15,7 +15,6 @@ An interactive web application that outlines Ollion's comprehensive deployment s
 - **Frontend Framework**: HTML5, CSS3, JavaScript (ES6+)
 - **CSS Framework**: [Tailwind CSS](https://tailwindcss.com)
 - **Charts**: [Chart.js](https://www.chartjs.org)
-- **AI Integration**: Google Gemini API
 - **Deployment**: Vercel
 
 ## 📋 Project Structure
@@ -69,14 +68,12 @@ dst_cloudzone/
 
 ## 🔧 Configuration
 
-### Gemini API Integration
+### [Optional] Gemini API Integration
 
-To enable the AI-powered risk analysis:
+To enable AI-powered risk analysis:
 1. Obtain a Gemini API key.
 2. Set the GEMINI_API_KEY environment variable in your Vercel project settings.
 3. The application uses a secure Vercel serverless function (`/api/generateInsights`) to proxy requests to the Gemini API, so your API key is never exposed to the browser.
-
-No need to hardcode or inject the API key into your frontend code.
 
 ### Customization
 
