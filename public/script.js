@@ -191,6 +191,171 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     });
+
+    // Use Cases Carousel
+    const carousel = document.getElementById('useCasesCarousel');
+    if (carousel) {
+        const slides = Array.from(carousel.querySelectorAll('.carousel-slide'));
+        const prevButton = document.getElementById('carouselPrevBtn');
+        const nextButton = document.getElementById('carouselNextBtn');
+        const indicatorsContainer = document.getElementById('carouselIndicators');
+        const slidesContainer = carousel.querySelector('.carousel-slides'); // Get the slides container
+
+        let currentIndex = 0;
+        const totalSlides = slides.length;
+
+        // ARIA labels already set in HTML; ensure focusable container
+        carousel.setAttribute('tabindex', '0');
+
+        // remove any existing dots
+        indicatorsContainer.innerHTML = '';
+        slides.forEach((_, idx) => {
+          const dot = document.createElement('button');
+          dot.classList.add(
+            'carousel-indicator',
+            'px-3', 'py-1', 'text-sm', 'font-medium',
+            'rounded-full', 'hover:bg-gray-600', 'focus:outline-none', 'transition-colors'
+          );
+          dot.setAttribute('data-slide-to', idx);
+          dot.setAttribute('aria-label', `View use case ${idx + 1}`);
+          dot.textContent = idx + 1;
+          if (idx === 0) {
+            dot.classList.add('bg-gray-800', 'text-white');
+          } else {
+            dot.classList.add('bg-gray-400', 'text-black');
+          }
+          indicatorsContainer.appendChild(dot);
+        });
+        const indicators = Array.from(indicatorsContainer.children);
+
+        // Function to update slides visibility and indicator styles.
+        function updateCarousel() {
+          // SLIDING LOGIC:
+          // Move the .carousel-slides container by a percentage
+          if (slidesContainer) {
+            slidesContainer.style.transform = `translateX(-${currentIndex * 100}%)`;
+          }
+
+          // Update indicator styles (this part remains the same)
+          indicators.forEach((dot, i) => {
+            if (i === currentIndex) {
+              dot.classList.add('bg-gray-800', 'text-white');
+              dot.classList.remove('bg-gray-400', 'text-black');
+            } else {
+              dot.classList.add('bg-gray-400', 'text-black');
+              dot.classList.remove('bg-gray-800', 'text-white');
+            }
+          });
+        }
+
+        function showSlide(i) {
+          currentIndex = (i + totalSlides) % totalSlides;
+          updateCarousel();
+        }
+
+        nextButton.addEventListener('click', () => showSlide(currentIndex + 1));
+        prevButton.addEventListener('click', () => showSlide(currentIndex - 1));
+        indicators.forEach(dot =>
+          dot.addEventListener('click', e => showSlide(+e.currentTarget.dataset.slideTo))
+        );
+
+        // Autoplay with pause on hover
+        let autoplay = setInterval(() => showSlide(currentIndex + 1), 5000);
+        carousel.addEventListener('mouseenter', () => clearInterval(autoplay));
+        carousel.addEventListener('mouseleave', () =>
+          autoplay = setInterval(() => showSlide(currentIndex + 1), 5000)
+        );
+
+        // Keyboard navigation
+        carousel.addEventListener('keydown', e => {
+          if (e.key === 'ArrowRight') showSlide(currentIndex + 1);
+          if (e.key === 'ArrowLeft') showSlide(currentIndex - 1);
+        });
+
+        // Touch/swipe support
+        let startX = 0;
+        carousel.addEventListener('touchstart', e => startX = e.changedTouches[0].screenX);
+        carousel.addEventListener('touchend', e => {
+          const endX = e.changedTouches[0].screenX;
+          if (endX - startX > 50) showSlide(currentIndex - 1);
+          if (startX - endX > 50) showSlide(currentIndex + 1);
+        });
+
+        // Compute and set fixed carousel height based on the tallest slide
+        function setFixedCarouselHeight() {
+          // Wait until images and other resources are loaded
+          const slides = document.querySelectorAll('#useCasesCarousel .carousel-slide');
+          let maxHeight = 0;
+          
+          // First, make sure one slide is active so we have accurate content
+          slides.forEach((slide, i) => {
+            if (i === 0) slide.classList.add('active');
+            else slide.classList.remove('active');
+          });
+          
+          // Force a repaint to ensure dimensions are calculated
+          document.body.offsetHeight;
+          
+          // Now measure each slide
+          slides.forEach(slide => {
+            // Clone the slide to measure it without affecting the display
+            const clone = slide.cloneNode(true);
+            clone.style.position = 'absolute';
+            clone.style.visibility = 'hidden';
+            clone.style.display = 'block';
+            clone.style.opacity = '1';
+            document.body.appendChild(clone);
+            
+            const height = clone.scrollHeight;
+            if (height > maxHeight) {
+              maxHeight = height;
+            }
+            
+            document.body.removeChild(clone);
+          });
+          
+        // Add buffer to ensure no content is cut off and to make it look bigger
+          const finalHeight = Math.max(maxHeight + 160, 550); // Increased buffer and min height
+          document.querySelector('#useCasesCarousel').style.height = finalHeight + 'px';
+          console.log('Set carousel height to', finalHeight);
+        }
+
+        // Set up carousel after page is fully loaded
+        window.addEventListener('load', function() {
+          // First initialize active slide
+          updateCarousel();
+          
+          // Then calculate height based on content
+          setFixedCarouselHeight();
+          
+          // Recalculate on window resize
+          window.addEventListener('resize', setFixedCarouselHeight);
+        });
+    }
+
+    const tabItems = document.querySelectorAll('#keyConsiderationsMenu .tab-item');
+    const tabContents = document.querySelectorAll('#keyConsiderationsContent .tab-content');
+    
+    // Optional: Activate the first tab by default
+    if(tabItems.length) {
+      tabItems[0].classList.add('bg-gray-200');
+    }
+    
+    tabItems.forEach(item => {
+      item.addEventListener('click', function(){
+        // Remove active styling from all tabs
+        tabItems.forEach(i => i.classList.remove('bg-gray-200'));
+        // Hide all tab content
+        tabContents.forEach(content => content.classList.add('hidden'));
+        // Activate the clicked tab
+        item.classList.add('bg-gray-200');
+        const targetId = item.getAttribute('data-tab');
+        const targetContent = document.getElementById(targetId);
+        if(targetContent) {
+          targetContent.classList.remove('hidden');
+        }
+      });
+    });
 });
 
 // Roadmap chart initialization
@@ -198,40 +363,59 @@ function initializeRoadmapChart() {
     const roadmapChartCtx = document.getElementById('roadmapChart');
     if (!roadmapChartCtx) return;
 
+    // Helper function to convert HEX to RGBA
+    function hexToRgba(hex, alpha = 1) {
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
+
+    const newPhaseLabels = [
+        'Mobilize',
+        'Infrastructure as a service',
+        'Migration',
+        'Data Storage',
+        'Disaster recovery as a service',
+        'Optimization'
+    ];
+
+    const phaseColors = {
+        mobilize: ' #3B4430',    // Ollion color
+        iaas: '#D93434',        // Red (from image description for IaaS)
+        migration: '#CC7722',   // Ochre (from image description for Migration)
+        dataStorage: '#008080', // Teal (from image description for Data Storage)
+        draas: '#243A73',       // Dark Blue (from image description for DRaaS)
+        optimization: '#2F3A4C' // Ollion color
+    };
+
     const roadmapData = {
-        labels: [
-            'Phase 0: Initiation & UNN LZ', 
-            'Phase 1: UC1 - IaaS & Pilot Migration', 
-            'Phase 2: UC2 - Scalable Data Storage', 
-            'Phase 3: UC3 - App Modernization', 
-            'Phase 4: UC4 - Comprehensive DR',
-            'Phase 5: Optimization (Ongoing)'
-        ],
+        labels: newPhaseLabels,
         datasets: [{
             label: 'Estimated Duration (Illustrative Months)',
             data: [
-                { x: [0, 2], y: 'Phase 0: Initiation & UNN LZ', activities: 'Project kick-off, UNN LZ Design & Build, Initial Assessments' },
-                { x: [2, 5], y: 'Phase 1: UC1 - IaaS & Pilot Migration', activities: 'Pilot migration to UNN, First CSP PLZ Build, Pilot to CSP' },
-                { x: [5, 9], y: 'Phase 2: UC2 - Scalable Data Storage', activities: 'Data landscape assessment, CSP Data Storage Implementation' },
-                { x: [9, 15], y: 'Phase 3: UC3 - App Modernization', activities: 'App portfolio assessment, Wave migrations, Modernization efforts' },
-                { x: [15, 18], y: 'Phase 4: UC4 - Comprehensive DR', activities: 'BIA, RTO/RPO, DRaaS implementation & testing' },
-                { x: [18, 24], y: 'Phase 5: Optimization (Ongoing)', activities: 'Continuous monitoring, cost/security/performance optimization' }
+                { x: [0, 2], y: 'Mobilize', activities: 'Project kick-off, UNN LZ Design & Build, Initial Assessments' },
+                { x: [2, 24], y: 'Infrastructure As a Service', activities: 'Foundational IaaS services, Pilot migration to UNN, First CSP PLZ Build, Pilot to CSP, Ongoing infrastructure support' }, // Extends until Optimization
+                { x: [5, 24], y: 'Migration', activities: 'App portfolio assessment, Wave migrations, Modernization efforts, Ongoing migration support' }, // Extends until Optimization
+                { x: [5, 24], y: 'Data Storage', activities: 'Data landscape assessment, CSP Data Storage Implementation, Ongoing data management' }, // Extends until Optimization
+                { x: [10, 24], y: 'Disaster Recovery As a Service', activities: 'BIA, RTO/RPO, DRaaS implementation & testing, Continuous DR readiness' }, // Ends when Optimization starts
+                { x: [15, 24], y: 'Optimization', activities: 'Continuous monitoring, cost/security/performance optimization' }
             ],
             backgroundColor: [
-                'rgba(54, 162, 235, 0.7)',
-                'rgba(255, 159, 64, 0.7)',
-                'rgba(75, 192, 192, 0.7)',
-                'rgba(153, 102, 255, 0.7)',
-                'rgba(255, 99, 132, 0.7)',
-                'rgba(201, 203, 207, 0.7)'
+                hexToRgba(phaseColors.mobilize, 0.7),
+                hexToRgba(phaseColors.iaas, 0.7),
+                hexToRgba(phaseColors.migration, 0.7),
+                hexToRgba(phaseColors.dataStorage, 0.7),
+                hexToRgba(phaseColors.draas, 0.7),
+                hexToRgba(phaseColors.optimization, 0.7)
             ],
             borderColor: [
-                'rgba(54, 162, 235, 1)',
-                'rgba(255, 159, 64, 1)',
-                'rgba(75, 192, 192, 1)',
-                'rgba(153, 102, 255, 1)',
-                'rgba(255, 99, 132, 1)',
-                'rgba(201, 203, 207, 1)'
+                phaseColors.mobilize,
+                phaseColors.iaas,
+                phaseColors.migration,
+                phaseColors.dataStorage,
+                phaseColors.draas,
+                phaseColors.optimization
             ],
             borderWidth: 1,
             barPercentage: 0.6,
@@ -256,13 +440,14 @@ function initializeRoadmapChart() {
                     max: 24
                 },
                 y: {
-                    stacked: true,
+                    // stacked: true, // Not needed for this Gantt-like display with distinct y-categories
                     ticks: {
                         autoSkip: false,
                         callback: function(value, index, values) {
-                            const label = this.getLabelForValue(value);
-                            if (label.length > 30) {
-                                return label.match(/.{1,30}/g);
+                            // 'this' refers to the scale object
+                            const label = this.getLabelForValue(value); 
+                            if (typeof label === 'string' && label.length > 30) {
+                                return label.match(/.{1,30}/g); // Split long labels
                             }
                             return label;
                         }
@@ -276,8 +461,6 @@ function initializeRoadmapChart() {
                 tooltip: {
                     callbacks: {
                         label: function(context) {
-                            const datasetLabel = context.dataset.label || '';
-                            const phase = context.raw.y;
                             const duration = context.raw.x[1] - context.raw.x[0];
                             const activities = context.raw.activities;
                             return `${phase}: ${duration} months. Key Activities: ${activities}`;
@@ -289,4 +472,4 @@ function initializeRoadmapChart() {
     };
     
     new Chart(roadmapChartCtx, roadmapConfig);
-} 
+}
