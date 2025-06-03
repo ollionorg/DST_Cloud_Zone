@@ -7,7 +7,6 @@ An interactive web application that outlines Ollion's comprehensive deployment s
 - **Interactive Navigation**: Smooth section transitions and mobile-responsive navigation
 - **Dynamic Content**: Expandable sections for detailed information
 - **Visual Roadmap**: Interactive Gantt-like chart using Chart.js
-- **AI-Powered Analysis**: Gemini API integration for risk analysis and mitigation strategies
 - **Responsive Design**: Optimized for all device sizes using Tailwind CSS
 - **Modern UI**: Clean, professional interface with smooth animations
 
