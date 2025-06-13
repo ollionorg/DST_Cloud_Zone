@@ -466,39 +466,63 @@
         </div>
     </section>
 
-        <section id="keyConsiderations" class="content-section space-y-6">
-          <div class="card p-6">
-            <h2 class="text-2xl font-semibold mb-4">Key Considerations and Recommendations</h2>
-            <div id="keyConsiderationsTabs" class="flex flex-col md:flex-row border border-gray-300 rounded-lg overflow-hidden">
-              <div id="keyConsiderationsMenu" class="md:w-1/3 bg-gray-50 border-b md:border-b-0 md:border-r border-gray-300">
-                <ul class="space-y-2">
-                  <li class="tab-item cursor-pointer p-2 hover:bg-gray-100" data-tab="technical-debt">Technical Debt Management</li>
-                  <li class="tab-item cursor-pointer p-2 hover:bg-gray-100" data-tab="skills-training">Skills and Training</li>
-                  <li class="tab-item cursor-pointer p-2 hover:bg-gray-100" data-tab="vendor-management">Vendor Management</li>
-                  <li class="tab-item cursor-pointer p-2 hover:bg-gray-100" data-tab="security-compliance">Security & Compliance</li>
-                  <li class="tab-item cursor-pointer p-2 hover:bg-gray-100" data-tab="future-scalability">Future Scalability & Evolution</li>
-                </ul>
-              </div>
-              <div id="keyConsiderationsContent" class="md:w-2/3 p-4">
-                <div id="technical-debt" class="tab-content">
-                  <p class="text-gray-700">Identification, assessment, and strategic remediation of existing technical debt during migration and modernization. Prevent new debt through cloud-native design principles and IaC. DST should allocate resources for ongoing management.</p>
+    <section id="keyConsiderations" class="content-section space-y-6">
+        <div class="card p-4 sm:p-6">
+            <h2 class="text-2xl lg:text-3xl font-semibold mb-5">Key Considerations & Recommendations</h2>
+            <div id="keyConsiderationsTabs" class="flex flex-col md:flex-row rounded-lg overflow-hidden border border-gray-200 shadow-inner bg-white/30">
+
+                <div id="keyConsiderationsMenu" class="relative md:w-1/3 flex-shrink-0 bg-gray-50/70 p-2 border-b md:border-b-0 md:border-r border-gray-200">
+                    <div role="tablist" aria-label="Key Considerations" class="relative flex flex-col space-y-1">
+                        <div id="activeTabIndicator" class="absolute left-0 w-full bg-white rounded-md shadow-sm"></div>
+                        
+                        <button id="tab-btn-1" role="tab" aria-selected="false" aria-controls="technical-debt" class="tab-item relative" data-tab="technical-debt">
+                            <svg class="w-6 h-6 mr-3 text-accent-color flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75" /></svg>
+                            <span>Technical Debt Management</span>
+                        </button>
+                        <button id="tab-btn-2" role="tab" aria-selected="false" aria-controls="skills-training" class="tab-item relative" data-tab="skills-training">
+                            <svg class="w-6 h-6 mr-3 text-accent-color flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path d="M12 14l9-5-9-5-9 5 9 5z" /><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" /><path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222" /></svg>
+                            <span>Skills and Training</span>
+                        </button>
+                        <button id="tab-btn-3" role="tab" aria-selected="false" aria-controls="vendor-management" class="tab-item relative" data-tab="vendor-management">
+                            <svg class="w-6 h-6 mr-3 text-accent-color flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m-7.5-2.962a3.75 3.75 0 015.968.08l-2.223 2.223a.75.75 0 001.06 1.06l2.223-2.223a3.75 3.75 0 01.08 5.968l-2.223 2.223a.75.75 0 001.06 1.06l2.223-2.223a3.75 3.75 0 01-5.704 2.262l-2.223-2.223a.75.75 0 00-1.06-1.06l-2.223 2.223a3.75 3.75 0 01-2.262-5.704l2.223-2.223a.75.75 0 00-1.06-1.06l-2.223 2.223z" /></svg>
+                            <span>Vendor Management</span>
+                        </button>
+                        <button id="tab-btn-4" role="tab" aria-selected="false" aria-controls="security-compliance" class="tab-item relative" data-tab="security-compliance">
+                            <svg class="w-6 h-6 mr-3 text-accent-color flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.286zm0 13.036h.008v.008h-.008v-.008z" /></svg>
+                            <span>Security & Compliance</span>
+                        </button>
+                        <button id="tab-btn-5" role="tab" aria-selected="false" aria-controls="future-scalability" class="tab-item relative" data-tab="future-scalability">
+                            <svg class="w-6 h-6 mr-3 text-accent-color flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21 7.5l-2.25-1.313M21 7.5v2.25m0-2.25l-2.25 1.313M3 7.5l2.25-1.313M3 7.5l2.25 1.313M3 7.5v2.25m9 3l2.25-1.313M12 12.75l-2.25 1.313M12 12.75V15m0 6.75l2.25-1.313M12 21.75l-2.25 1.313M12 21.75v-2.25m9-9l-2.25-1.313M18.75 10.5l-2.25 1.313M18.75 10.5V12.75m-15 0l2.25-1.313M5.25 10.5l2.25 1.313M5.25 10.5V12.75m9 4.5l2.25-1.313M12 17.25l-2.25 1.313M12 17.25v2.25" /></svg>
+                            <span>Future Scalability & Evolution</span>
+                        </button>
+                    </div>
                 </div>
-                <div id="skills-training" class="tab-content hidden">
-                  <p class="text-gray-700">Skills assessment for DST teams. Ollion will provide/facilitate tailored training on the white-labeled service, cloud consumption, specific technologies, and cloud financial management. Encourage continuous learning.</p>
+
+                <div id="keyConsiderationsContent" class="md:w-2/3 p-6">
+                    <div id="technical-debt" role="tabpanel" aria-labelledby="tab-btn-1" class="tab-content">
+                        <h3 class="font-semibold text-lg text-gray-800 mb-2">Architectural Integrity</h3>
+                        <p class="text-gray-600">Proactively address and remediate existing technical debt during migration while enforcing cloud-native principles and Infrastructure as Code (IaC) to prevent new debt from accumulating. This requires a dedicated budget for ongoing management to ensure long-term architectural health and agility.</p>
+                    </div>
+                    <div id="skills-training" role="tabpanel" aria-labelledby="tab-btn-2" class="tab-content">
+                        <h3 class="font-semibold text-lg text-gray-800 mb-2">Team Enablement</h3>
+                        <p class="text-gray-600">Empower your teams by conducting a comprehensive skills assessment, followed by tailored training modules from Ollion. We'll focus on the white-labeled service, effective cloud consumption, and financial management to foster a culture of continuous learning and cloud excellence.</p>
+                    </div>
+                    <div id="vendor-management" role="tabpanel" aria-labelledby="tab-btn-3" class="tab-content">
+                        <h3 class="font-semibold text-lg text-gray-800 mb-2">Simplified Partnerships</h3>
+                        <p class="text-gray-600">Streamline complexity by leveraging Ollion as your single point of contact for all vendor interactions. We manage the underlying CSP relationships, SLAs, and performance, allowing you to focus on strategy while we handle the operational intricacies.</p>
+                    </div>
+                    <div id="security-compliance" role="tabpanel" aria-labelledby="tab-btn-4" class="tab-content">
+                        <h3 class="font-semibold text-lg text-gray-800 mb-2">Robust Security Posture</h3>
+                        <p class="text-gray-600">Maintain a formidable security and compliance posture with Ollion's continuous monitoring and joint incident response plans. We manage ongoing audits and patching, while your active participation in regular reviews ensures the security framework remains tightly aligned with your business needs.</p>
+                    </div>
+                    <div id="future-scalability" role="tabpanel" aria-labelledby="tab-btn-5" class="tab-content">
+                        <h3 class="font-semibold text-lg text-gray-800 mb-2">Built for Growth</h3>
+                        <p class="text-gray-600">Build for tomorrow with an architecture designed for rapid scalability. Through regular strategic reviews, Ollion will partner with you to evolve the service catalog, integrate emerging CSP services, and capitalize on new technologies like AI/ML and serverless computing.</p>
+                    </div>
                 </div>
-                <div id="vendor-management" class="tab-content hidden">
-                  <p class="text-gray-700">Ollion as the single point of contact, managing underlying CSP relationships, performance, and SLAs on behalf of DST. DST should establish clear review processes with Ollion.</p>
-                </div>
-                <div id="security-compliance" class="tab-content hidden">
-                  <p class="text-gray-700">Continuous security monitoring, joint incident response plans, and ongoing compliance management (audits, reporting) with security updates and patching managed by Ollion. DST’s active participation in reviews is key.</p>
-                </div>
-                <div id="future-scalability" class="tab-content hidden">
-                  <p class="text-gray-700">Architecture designed for scalability. Ollion will work with DST on evolving the service catalog, incorporating new CSP services, and advising on new technologies (AI/ML, serverless) through regular strategic reviews.</p>
-                </div>
-              </div>
             </div>
-          </div>
-        </section>
+        </div>
+    </section>
 
         <section id="glossary" class="content-section">
             <div class="card p-6">

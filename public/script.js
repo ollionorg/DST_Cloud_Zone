@@ -588,3 +588,91 @@ function initializeRoadmapChart() {
         });
     }
 }
+
+// Key Considerations Tabbed Interface - V2 with Enhancements
+const considerationsContainer = document.getElementById('keyConsiderationsTabs');
+
+if (considerationsContainer) {
+    const tabMenu = considerationsContainer.querySelector('#keyConsiderationsMenu');
+    const tabButtons = Array.from(considerationsContainer.querySelectorAll('.tab-item'));
+    const contentContainer = considerationsContainer.querySelector('#keyConsiderationsContent');
+    const contentPanels = Array.from(considerationsContainer.querySelectorAll('.tab-content'));
+    const activeTabIndicator = considerationsContainer.querySelector('#activeTabIndicator');
+
+    // Improvement 2: Function to stabilize content area height
+    const setContentContainerHeight = () => {
+        let maxHeight = 0;
+        contentPanels.forEach(panel => {
+            // Temporarily make panel visible to measure its full height
+            panel.style.display = 'block';
+            panel.style.visibility = 'hidden';
+            
+            if (panel.scrollHeight > maxHeight) {
+                maxHeight = panel.scrollHeight;
+            }
+
+            // Hide it again
+            panel.style.display = '';
+            panel.style.visibility = '';
+        });
+        
+        // Apply the max height to the container
+        if(contentContainer){
+             contentContainer.style.minHeight = `${maxHeight}px`;
+        }
+    };
+
+    // Main function to handle switching tabs
+    const setActiveTab = (tabButton) => {
+        if (!tabButton) return;
+
+        const targetPanelId = tabButton.getAttribute('data-tab');
+
+        // Improvement 1: Animate the indicator
+        if(activeTabIndicator) {
+            activeTabIndicator.style.top = `${tabButton.offsetTop}px`;
+            activeTabIndicator.style.height = `${tabButton.offsetHeight}px`;
+        }
+
+        // Improvement 3: Update ARIA attributes and classes
+        tabButtons.forEach(btn => {
+            btn.classList.remove('active');
+            btn.setAttribute('aria-selected', 'false');
+        });
+
+        tabButton.classList.add('active');
+        tabButton.setAttribute('aria-selected', 'true');
+        
+        contentPanels.forEach(panel => {
+            if (panel.id === targetPanelId) {
+                panel.classList.add('active');
+                panel.setAttribute('aria-hidden', 'false');
+            } else {
+                panel.classList.remove('active');
+                panel.setAttribute('aria-hidden', 'true');
+            }
+        });
+    };
+
+    // Set up event listeners
+    tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            setActiveTab(button);
+        });
+    });
+
+    // Debounced resize handler for recalculating height
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(setContentContainerHeight, 250);
+    });
+
+    // Initialize the component
+    if (tabButtons.length > 0) {
+        // Set initial state for the first tab
+        setActiveTab(tabButtons[0]);
+        // Set the container height after a brief delay to ensure rendering
+        setTimeout(setContentContainerHeight, 50);
+    }
+}
