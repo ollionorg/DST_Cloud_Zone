@@ -73,7 +73,28 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Initialize roadmap chart if it exists
     if (document.getElementById('roadmapChart')) {
-        initializeRoadmapChart(); 
+        initializeRoadmapChart(); // Initial call to draw the chart
+
+        // Setup a single, debounced resize handler to manage the chart.
+        // This is placed here so it's only created once.
+        let resizeTimeout;
+        let lastWindowWidth = window.innerWidth; // Store the initial width
+
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                const currentWidth = window.innerWidth;
+
+                // Only re-initialize if the window width has changed.
+                // This prevents re-rendering on mobile scroll (which only changes height).
+                if (currentWidth !== lastWindowWidth) {
+                    lastWindowWidth = currentWidth; // Update the stored width
+
+                    // The initializeRoadmapChart function already handles destroying the previous chart instance.
+                    initializeRoadmapChart();
+                }
+            }, 250); // Debounce to avoid rapid firing
+        });
     }
 
     // Set up event listeners for active section
@@ -99,7 +120,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (totalSlides === 0) {
             console.warn("No slides found for use cases carousel. Aborting carousel setup.");
             if (carousel) carousel.style.display = 'none'; 
-            // return; // Do not return from the main DOMContentLoaded if other scripts need to run
+            
         } else { // Only run carousel logic if there are slides
 
             carousel.setAttribute('tabindex', '0');
@@ -237,40 +258,36 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             // **MODIFIED PART STARTS HERE**
-            // Wait for both the window to load and fonts to be ready
-            if (typeof document.fonts === "undefined") {
-                // Fallback for browsers that don't support document.fonts (very old)
-                if (document.readyState === 'complete') {
-                    initializeCarouselOnLoad();
-                } else {
-                    window.addEventListener('load', initializeCarouselOnLoad, { once: true });
-                }
-            } else {
-                 Promise.all([
-                    new Promise(resolve => {
-                        if (document.readyState === 'complete') {
-                            resolve();
-                        } else {
-                            window.addEventListener('load', resolve, { once: true });
-                        }
-                    }),
-                    document.fonts.ready
-                ]).then(() => {
-                    // console.log("Window loaded and fonts ready, initializing carousel."); // For debugging
-                    initializeCarouselOnLoad();
-                }).catch(error => {
-                    console.error("Error waiting for fonts or load, initializing carousel with fallback:", error);
-                    // Fallback: Initialize on load anyway if fonts.ready fails
-                     if (document.readyState === 'complete') {
-                        initializeCarouselOnLoad();
-                    } else {
-                        window.addEventListener('load', initializeCarouselOnLoad, { once: true });
+            // This uses an IntersectionObserver to initialize the carousel only when it
+            // becomes visible, ensuring all content and fonts are fully rendered.
+            const carouselObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    // When the carousel is intersecting with the viewport
+                    if (entry.isIntersecting) {
+                        // A small timeout for an extra safeguard against rendering race conditions.
+                        setTimeout(() => {
+                            initializeCarouselOnLoad();
+                        }, 100);
+
+                        // Stop observing once we've initialized it.
+                        observer.unobserve(entry.target);
                     }
                 });
-            }
-            // **MODIFIED PART ENDS HERE**
+            }, {
+                rootMargin: '0px',
+                threshold: 0.1  // Trigger when at least 10% of the element is visible
+            });
 
-            window.addEventListener('resize', setFixedCarouselHeight);
+            // Start observing the carousel element.
+            carouselObserver.observe(carousel);
+
+            // A debounced resize handler is still needed for orientation changes or window resizing.
+            let carouselResizeTimeout;
+            window.addEventListener('resize', () => {
+                clearTimeout(carouselResizeTimeout);
+                carouselResizeTimeout = setTimeout(setFixedCarouselHeight, 250);
+            });
+            // **MODIFIED PART ENDS HERE**
 
             if (totalSlides <= 1) {
                 if (prevButton) prevButton.style.display = 'none';
@@ -310,7 +327,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 }); // End of DOMContentLoaded
 
-// Roadmap chart initialization
+// ... (The rest of the file, including initializeRoadmapChart, remains unchanged) ...
 function initializeRoadmapChart() {
     const roadmapChartCtx = document.getElementById('roadmapChart')?.getContext('2d');
     if (!roadmapChartCtx) {
@@ -557,19 +574,6 @@ function initializeRoadmapChart() {
         window.myRoadmapChart.destroy();
     }
     window.myRoadmapChart = new Chart(roadmapChartCtx, roadmapConfig);
-
-    // Debounced resize handler
-    let resizeTimeout;
-    window.addEventListener('resize', () => {
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(() => {
-            if (window.myRoadmapChart) {
-                window.myRoadmapChart.destroy();
-            }
-            initializeRoadmapChart(); // Re-initialize chart with new screen size considerations
-        }, 250);
-    });
-
 
     if (roadmapChartCtx.canvas) {
         roadmapChartCtx.canvas.addEventListener('mouseout', (event) => {
